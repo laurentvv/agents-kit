@@ -1,0 +1,2 @@
+# Fins de ligne LF dans le dépôt et à l'extraction (le script écrit newline="\n")
+* text=auto eol=lf

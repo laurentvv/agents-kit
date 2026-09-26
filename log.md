@@ -37,3 +37,4 @@
 ## [2026-09-26] gen  | Canon v2.1: language rule in §1 (repository content in English, chat replies to the user in French; deviations in §7).
 ## [2026-09-26] eval | v2.1 registered (6 968 bytes); real v1.0 (generator-assets) and v2.0 files synced to v2.1, §7 identical; 50 tests green.
 ## [2026-09-26] sync | Fleet rollout v2.1: 16 repos under C:\GIT behind synced; L'HERITIER DU VIDE (C:\test) adopted and section 7 sorted.
+## [2026-09-26] done | Fleet rollout closed: 18 AGENTS.md on v2.1 with English section 7; 16 repos pushed to GitHub; Trading-AI and my-claw held back (remote ahead), ComfyUI-Majoor 403.

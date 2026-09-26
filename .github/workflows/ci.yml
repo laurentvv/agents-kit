@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    # Git Bash on Windows (the kit's declared shell); -eo pipefail: the first failing command fails the step.
+    shell: bash
+
+jobs:
+  tests:
+    name: tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: false
+      - name: Unit tests (including the English-only guard)
+        run: uv run --no-project python -m unittest discover -s tests -v
+      - name: Canon registered (version + fingerprint)
+        run: uv run --no-project python scripts/sync_agents.py version
+      - name: Kit AGENTS.md and template identical to the canon
+        run: |
+          uv run --no-project python scripts/sync_agents.py check .
+          uv run --no-project python scripts/sync_agents.py check . --file template/AGENTS.template.md
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: false
+      - name: Ruff
+        run: uvx ruff@0.16.9 check scripts tests  # pinned: same version locally and in CI
+
+  reusable-check:
+    # Runs the workflow the consumer repositories call, against this very commit.
+    uses: ./.github/workflows/agents-md-check.yml
+    with:
+      kit-repository: ${{ github.repository }}
+      kit-ref: ${{ github.sha }}

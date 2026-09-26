@@ -1,0 +1,136 @@
+{
+  "features": [
+    {
+      "id": "F-01",
+      "name": "Robust reading",
+      "description": "Non-UTF-8 encoding / BOM / missing folder: clear message, never a traceback, the audit goes on.",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
+      "id": "F-02",
+      "name": "Fingerprint registry + fine-grained analysis",
+      "description": "agents-common.versions.json (version -> sha256); states up to date / behind / hand-edited / ahead / invalid markers; version [--register] command.",
+      "status": "completed",
+      "dependencies": [
+        "F-01"
+      ]
+    },
+    {
+      "id": "F-03",
+      "name": "Safe sync + diff",
+      "description": "sync refuses local edits and downgrades without --force, writes nothing if up to date, --dry-run; check --diff; an unregistered canon is never distributed.",
+      "status": "completed",
+      "dependencies": [
+        "F-02"
+      ]
+    },
+    {
+      "id": "F-04",
+      "name": "audit: exclusions + mixed generated blocks + --strict",
+      "description": ".agents-kit-ignore / --exclude; Next.js/OpenSpec file with project content = to migrate; --strict for CI.",
+      "status": "completed",
+      "dependencies": [
+        "F-02"
+      ]
+    },
+    {
+      "id": "F-05",
+      "name": "adopt command",
+      "description": "Inserts the common block into an existing AGENTS.md without losing anything (previous content kept in §7), leading generated block preserved.",
+      "status": "completed",
+      "dependencies": [
+        "F-02"
+      ]
+    },
+    {
+      "id": "F-06",
+      "name": "ledger command",
+      "description": "Read-only lint of the 4 state files per §2 (JSON, statuses, ids, log format/budget/rotation, 15-30 criteria).",
+      "status": "completed",
+      "dependencies": [
+        "F-01"
+      ]
+    },
+    {
+      "id": "F-07",
+      "name": "Tests + CI",
+      "description": "Standard-library unittest + GitHub Actions (Ubuntu/Windows): tests, kit and template check, registered version.",
+      "status": "completed",
+      "dependencies": [
+        "F-03",
+        "F-04",
+        "F-05",
+        "F-06"
+      ]
+    },
+    {
+      "id": "F-08",
+      "name": "Documentation",
+      "description": "README, docstring, AGENTS.md §7, MIGRATION.md updated with the new commands.",
+      "status": "completed",
+      "dependencies": [
+        "F-07"
+      ]
+    },
+    {
+      "id": "F-09",
+      "name": "Tests independent of the canon version",
+      "description": "Tests derive the current canon version instead of hardcoding \"v1.0\": a version bump must break no test.",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
+      "id": "F-10",
+      "name": "Canon v1.1",
+      "description": "Priority of instructions, untouchable block (lessons in §7), ledger proportionality, contract lifecycle, closure, encoding, destructive git, external content, tests never weakened, pinned tools.",
+      "status": "completed",
+      "dependencies": [
+        "F-09"
+      ]
+    },
+    {
+      "id": "F-11",
+      "name": "v1.1 propagation and documentation",
+      "description": "Registry, template, kit AGENTS.md, ledger template, README, MIGRATION, CHANGELOG.",
+      "status": "completed",
+      "dependencies": [
+        "F-10"
+      ]
+    },
+    {
+      "id": "F-12",
+      "name": "Script and tests in English",
+      "description": "Identifiers, docstrings, comments, CLI flags and messages, state labels; legacy agents-commun markers still recognized so sync can migrate the fleet.",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
+      "id": "F-13",
+      "name": "Canon v2.0 in English",
+      "description": "agents-common.md with agents-common markers, registry renamed and extended, template and kit AGENTS.md resynced.",
+      "status": "completed",
+      "dependencies": [
+        "F-12"
+      ]
+    },
+    {
+      "id": "F-14",
+      "name": "Docs and ledger history in English",
+      "description": "README, CHANGELOG, MIGRATION, audit, token measurement, journal archives, feature archive, log, CI, .gitattributes.",
+      "status": "completed",
+      "dependencies": [
+        "F-13"
+      ]
+    },
+    {
+      "id": "F-15",
+      "name": "English regression guard and token re-measurement",
+      "description": "Test failing on French characters or French file names in tracked files; v2.0 token count measured.",
+      "status": "completed",
+      "dependencies": [
+        "F-14"
+      ]
+    }
+  ]
+}

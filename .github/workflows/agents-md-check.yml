@@ -1,0 +1,44 @@
+name: AGENTS.md check
+
+# Reusable workflow for the repositories that use the common block: their CI turns red
+# as soon as AGENTS.md is not identical to the agents-kit canon (behind after a kit
+# release, hand-edited block, invalid markers). Callers: see template/agents-md.yml.
+on:
+  workflow_call:
+    inputs:
+      kit-repository:
+        description: Repository holding agents-kit
+        type: string
+        default: laurentvv/agents-kit
+      kit-ref:
+        description: Branch, tag or commit of agents-kit to compare against
+        type: string
+        default: main
+      file:
+        description: File holding the common block
+        type: string
+        default: AGENTS.md
+
+permissions:
+  contents: read
+
+jobs:
+  common-block:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ inputs.kit-repository }}
+          ref: ${{ inputs.kit-ref }}
+          path: .agents-kit
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: false
+      - name: Common block identical to the agents-kit canon
+        env:
+          TARGET_FILE: ${{ inputs.file }}
+        run: uv run --no-project python .agents-kit/scripts/sync_agents.py check . --file "$TARGET_FILE" --diff

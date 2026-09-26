@@ -1,8 +1,3 @@
-# AGENTS.md — <REPO NAME>
-
-> Instructions for any AI coding agent working in this repository.
-> Structure: **common block** (delimited, resyncable) + **project-specific part** (free).
-
 <!-- BEGIN:agents-common v2.1 — block shared across repositories (agents-kit). Do not edit by hand: resync with scripts/sync_agents.py -->
 <!-- The script only replaces what lies between the BEGIN/END markers; all repository-specific content is preserved -->
 
@@ -84,35 +79,3 @@ Never rely on the context window alone: it degrades, gets compressed, gets erase
 - Lesson learned → §7 "Pitfalls & lessons" (dated format `[YYYY-MM-DD] context — rule`), never in this common block.
 
 <!-- END:agents-common -->
-
----
-
-## §7 Project-specific (free — recommended cap ~150 lines)
-
-> **To fill in per repository.** Useful sections:
-
-### Mission / scope
-*(1 paragraph: what the project does, what it does not do)*
-
-### Declared locations (deviations from the common block)
-- Ledger: `root` | `.agents/` | `memory-bank/`; log variant: `.md file` | `B: DuckDB/SQLite database`
-- Extended statuses: *(e.g. `awaiting_playtest`)*; extended log types: *(e.g. `rot`, `plan`)*
-- Machine / shell: Windows + Git Bash (default) | PowerShell 7 | WSL / Linux; commands required/forbidden in this repo
-- Language deviation: *(default from §1: repository content in English, chat replies to the user in French)*
-
-### Key commands
-```bash
-# §3 gate (pinned versions, identical in CI): lint ... ; tests ...
-# build: ...
-# run: ...
-```
-
-### Business invariants (never break)
-*(schema contracts, product invariants, domain rules…)*
-
-### Pitfalls & lessons (dated format)
-- **[YYYY-MM-DD] context** — rule kept. *(Lessons live HERE, never in the common block: it is overwritten on every sync.)*
-
-### References
-- Long context: `PROJECT_MEMORY.md` / `docs/memory_bank/…`
-- Cross-repo ecosystem: *(single shared source — do not duplicate it here)*

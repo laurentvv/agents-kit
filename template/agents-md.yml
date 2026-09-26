@@ -1,0 +1,19 @@
+# Copy to .github/workflows/agents-md.yml in every repository that uses the common block.
+# Its CI turns red when AGENTS.md drifts from the agents-kit canon: after a new kit
+# version (weekly run, even without activity here), a hand-edited block or broken markers.
+# Fix: run `sync` from agents-kit on this repository, then commit on a branch.
+name: AGENTS.md
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "17 6 * * 1"   # every Monday
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  common-block:
+    uses: laurentvv/agents-kit/.github/workflows/agents-md-check.yml@main

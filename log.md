@@ -36,3 +36,4 @@
 ## [2026-09-26] eval | CI 3234e9c fully green, reusable-check job included: the repositories' guard runs end to end on GitHub.
 ## [2026-09-26] gen  | Canon v2.1: language rule in §1 (repository content in English, chat replies to the user in French; deviations in §7).
 ## [2026-09-26] eval | v2.1 registered (6 968 bytes); real v1.0 (generator-assets) and v2.0 files synced to v2.1, §7 identical; 50 tests green.
+## [2026-09-26] sync | Fleet rollout v2.1: 16 repos under C:\GIT behind synced; L'HERITIER DU VIDE (C:\test) adopted and section 7 sorted.

@@ -2,6 +2,15 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Tooling — 2026-09-28: common skills management
+
+- New script `scripts/skills_agents.py` (standard library only, no npx/Node): it vendors **common agent skills** into the kit (`skills/<name>/`, registry `skills.json`: source, pinned commit, import date, license, per-file sha256) and deploys them into every repository's `.agents/skills/` folder, with a per-repository lock (`.agents/skills/.agents-kit.json`).
+- Commands: `add <github-url> [--skill NAME] [--ref REF] [--force]`, `list`, `check <repo> [--diff]`, `sync <repo> [--dry-run] [--force] [--skill NAME]`, `audit [root] [--strict] [--exclude]`.
+- Same safety model as the block: a hand-edited install (or an unmanaged skill folder) is refused without `--force`; an up-to-date repository is not rewritten; orphans (no longer vendored) are pruned; `check`/`sync`/`audit` need no network — the kit copy is the single distribution source, so an imported skill is reviewed once and pinned by commit.
+- **Update cycle**: `skills update` (online) re-imports the vendored skills whose upstream moved on (registry refreshed: ref, files, license, `updated` date; hand-edited kit copies refused without `--force`; identical content on a new commit only re-pins); `skills deploy [root]` (local) then propagates to every repository that already has `.agents/skills`, with per-repository refusals that never block the rest of the fleet (`--dry-run`, `--strict`, `--skill`, exclusions). Repositories without `.agents/skills` are never touched.
+- First vendored skill: `using-superpowers` (obra/superpowers, MIT, pinned commit `8ca22db`), deployed across the fleet (13 repositories pushed, see the kit log).
+- **The common block is unchanged**: no `sync` needed on the fleet for this entry. To deploy the skill: `skills sync <repo>` in each repository (or `skills audit` to see who has what).
+
 ## Common block v2.1 — 2026-09-26
 
 - §1 **Language** rule: English for everything written in the repository (code, comments, docs, commit messages, ledger); French for chat replies to the user. Any deviation is declared in §7 (the template's §7 line becomes "Language deviation").

@@ -152,6 +152,7 @@ uv run --no-project python scripts/skills_agents.py audit [--strict]
 - **[2026-09-26] tooling sprint** — CI lint red on the first push: unpinned `uvx ruff` pulled 0.16.9 (new default rules) against 0.15.8 locally. Always pin the lint tool (`ruff@X.Y.Z`) identically in CI and in the §7 commands.
 - **[2026-09-26] canon v1.1** — the tests hardcoded "v1.0" and section titles: the version bump would have made them silent (no-op replacements) or red. Fixtures derive the current version and only touch the markers.
 - **[2026-09-26] fleet rollout** — the v1.0 script reports a v2.0 repository as "unmanaged" and suggests `init --force` (which would overwrite §7): always merge and pull the kit before syncing the repositories (checklist in `docs/MIGRATION.md`).
+- **[2026-09-28] skills sprint** — ruff EXE001 fires only on POSIX (shebang present, no exec bit): the local Windows gate stays green while CI is red — it went unnoticed on `main` for two days. A script with a shebang must be committed 100755 (`git update-index --chmod=+x`); a Windows-only gate can never prove a filesystem-bit rule.
 
 ### References
 

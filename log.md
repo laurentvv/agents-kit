@@ -50,3 +50,4 @@
 ## [2026-09-28] gen  | F-21..F-22: skills update (online re-import, re-pin, refusals) + skills deploy (fleet sweep via shared sync_repo).
 ## [2026-09-28] eval | 15 new offline tests: 87 green; real update --dry-run online green; deploy --dry-run caught a dry-run status bug (fixed + regression test).
 ## [2026-09-28] done | skills-updates sprint closed: F-21..F-24 archived; contract and progress in docs/journal/; push pending.
+## [2026-09-28] done | PR #1 merged to main (13 checks green); branch deleted. CI fix: scripts committed 100755 (EXE001 had left main red since 09-26, invisible on Windows).

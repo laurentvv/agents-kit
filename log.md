@@ -43,3 +43,6 @@
 ## [2026-09-28] fix  | extract_skill: tarball top-dir prefix bug, spurious dir warnings, license text detection (MIT), empty audit detail.
 ## [2026-09-28] eval | 22 new offline tests (GitHub seam mocked, urlopen poisoned): 72 green; ruff green; real add + sync into a fire_UI copy green.
 ## [2026-09-28] done | skills sprint closed: F-16..F-20 archived; contract and progress in docs/journal/; push and CI check pending.
+
+
+## [2026-09-28] sync | using-superpowers: 13 repos pushed, roblox committed (no push), 4 installed only (no git/ignored); held back: ComfyUI-Majoor, my-claw, Trading-AI, novel2video-ai.

@@ -37,7 +37,7 @@
     {
       "id": "F-05",
       "name": "adopt command",
-      "description": "Inserts the common block into an existing AGENTS.md without losing anything (previous content kept in §7), leading generated block preserved.",
+      "description": "Inserts the common block into an existing AGENTS.md without losing anything (previous content kept in \u00a77), leading generated block preserved.",
       "status": "completed",
       "dependencies": [
         "F-02"
@@ -46,7 +46,7 @@
     {
       "id": "F-06",
       "name": "ledger command",
-      "description": "Read-only lint of the 4 state files per §2 (JSON, statuses, ids, log format/budget/rotation, 15-30 criteria).",
+      "description": "Read-only lint of the 4 state files per \u00a72 (JSON, statuses, ids, log format/budget/rotation, 15-30 criteria).",
       "status": "completed",
       "dependencies": [
         "F-01"
@@ -67,7 +67,7 @@
     {
       "id": "F-08",
       "name": "Documentation",
-      "description": "README, docstring, AGENTS.md §7, MIGRATION.md updated with the new commands.",
+      "description": "README, docstring, AGENTS.md \u00a77, MIGRATION.md updated with the new commands.",
       "status": "completed",
       "dependencies": [
         "F-07"
@@ -83,7 +83,7 @@
     {
       "id": "F-10",
       "name": "Canon v1.1",
-      "description": "Priority of instructions, untouchable block (lessons in §7), ledger proportionality, contract lifecycle, closure, encoding, destructive git, external content, tests never weakened, pinned tools.",
+      "description": "Priority of instructions, untouchable block (lessons in \u00a77), ledger proportionality, contract lifecycle, closure, encoding, destructive git, external content, tests never weakened, pinned tools.",
       "status": "completed",
       "dependencies": [
         "F-09"
@@ -130,6 +130,51 @@
       "status": "completed",
       "dependencies": [
         "F-14"
+      ]
+    },
+    {
+      "id": "F-16",
+      "name": "skills import (add/list)",
+      "description": "scripts/skills_agents.py: fetch a skill folder from a GitHub tarball (stdlib only), vendor it under skills/<name>/, registry skills.json (source, sha, fingerprints).",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
+      "id": "F-17",
+      "name": "skills deploy (sync/check)",
+      "description": "Install/update <repo>/.agents/skills/<name>/ + lock .agents/skills/.agents-kit.json; refusals on hand-edited files without --force; --dry-run; per-skill granularity.",
+      "status": "completed",
+      "dependencies": [
+        "F-16"
+      ]
+    },
+    {
+      "id": "F-18",
+      "name": "skills audit (fleet)",
+      "description": "Sweep every <root>/<repo>/.agents/skills against the kit: up to date / behind / hand-edited / none; --strict, --exclude, .agents-kit-ignore.",
+      "status": "completed",
+      "dependencies": [
+        "F-17"
+      ]
+    },
+    {
+      "id": "F-19",
+      "name": "Offline tests",
+      "description": "unittest suite with mocked GitHub seam (in-memory tarball): import, registry, refusals, lock, update, prune, audit, encoding guards.",
+      "status": "completed",
+      "dependencies": [
+        "F-16"
+      ]
+    },
+    {
+      "id": "F-20",
+      "name": "Docs and first skill",
+      "description": "README section, CHANGELOG entry, kit AGENTS.md \u00a77 commands + invariants; vendor using-superpowers (obra/superpowers) through the real path and sync a simulated consumer repo.",
+      "status": "completed",
+      "dependencies": [
+        "F-16",
+        "F-17",
+        "F-19"
       ]
     }
   ]

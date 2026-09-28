@@ -38,3 +38,8 @@
 ## [2026-09-26] eval | v2.1 registered (6 968 bytes); real v1.0 (generator-assets) and v2.0 files synced to v2.1, §7 identical; 50 tests green.
 ## [2026-09-26] sync | Fleet rollout v2.1: 16 repos under C:\GIT behind synced; L'HERITIER DU VIDE (C:\test) adopted and section 7 sorted.
 ## [2026-09-26] done | Fleet rollout closed: 18 AGENTS.md on v2.1 with English section 7; 16 repos pushed to GitHub; Trading-AI and my-claw held back (remote ahead), ComfyUI-Majoor 403.
+## [2026-09-28] init | "skills management" sprint: import/deploy common skills to .agents/skills; contract frozen (22 criteria).
+## [2026-09-28] gen  | F-16..F-18: skills_agents.py (add/list/check/sync/audit); vendored using-superpowers (obra/superpowers, MIT, 8ca22db).
+## [2026-09-28] fix  | extract_skill: tarball top-dir prefix bug, spurious dir warnings, license text detection (MIT), empty audit detail.
+## [2026-09-28] eval | 22 new offline tests (GitHub seam mocked, urlopen poisoned): 72 green; ruff green; real add + sync into a fire_UI copy green.
+## [2026-09-28] done | skills sprint closed: F-16..F-20 archived; contract and progress in docs/journal/; push and CI check pending.

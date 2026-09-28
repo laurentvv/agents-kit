@@ -1,6 +1,6 @@
 # agents-kit
 
-**Versioned common `AGENTS.md` base + sync script**, to run a fleet of repositories with AI coding agents (ZCode, Claude Code, Codex, Cursor, Windsurf…). Written in English, designed for Windows + `uv`, with zero dependencies.
+**Versioned common `AGENTS.md` base + common skills, with their sync scripts**, to run a fleet of repositories with AI coding agents (ZCode, Claude Code, Codex, Cursor, Windsurf…). Written in English, designed for Windows + `uv`, with zero dependencies.
 
 ## The problem
 
@@ -113,6 +113,34 @@ Two safety nets make sure no repository is forgotten after a new version of the 
 
 **Always release the kit first**: merge the new version into the kit's `main` and `git pull` your local copy *before* syncing the repositories. An older kit does not know newer markers: the v1.0 script reports a v2.0 repository as "unmanaged" and suggests `init --force`, which would overwrite its §7. The full checklist is in [`docs/MIGRATION.md`](docs/MIGRATION.md#rolling-out-a-new-version-of-the-block).
 
+## Common skills (`scripts/skills_agents.py`)
+
+The kit also distributes **common agent skills** (folders holding a `SKILL.md`, e.g. [obra/superpowers](https://github.com/obra/superpowers)) into every repository's `.agents/skills/` folder — the same import-once, deploy-everywhere discipline as the block, with no npx/Node dependency (standard library only).
+
+```bash
+# Vendor a skill in the kit once (review point: skill content is external data)
+uv run --no-project python scripts/skills_agents.py add https://github.com/obra/superpowers --skill using-superpowers
+uv run --no-project python scripts/skills_agents.py list
+
+# Deploy into a repository: .agents/skills/<name>/ + lock .agents/skills/.agents-kit.json
+uv run --no-project python scripts/skills_agents.py sync ../my-project          # [--dry-run] [--skill NAME] [--force]
+uv run --no-project python scripts/skills_agents.py check ../my-project [--diff]
+
+# Fleet sweep (same spirit as the AGENTS.md audit)
+uv run --no-project python scripts/skills_agents.py audit [--strict] [--exclude PATTERN]
+```
+
+| Per-skill state | Meaning | Action |
+|---|---|---|
+| install | not installed yet | `sync` |
+| up to date | files match the lock and the kit | nothing |
+| update (behind) | install intact, the kit vendored a newer version | `sync` |
+| hand-edited | an installed file changed since install | `check --diff`, then `sync --force` |
+| unmanaged | folder exists but was not installed by the kit | `sync --force` to take it over |
+| orphan | still installed but no longer vendored in the kit | pruned by `sync` |
+
+Provenance and drift detection: `skills.json` (kit) records for each skill its source, the pinned commit, the import date, the license and the per-file sha256 fingerprints; the per-repository lock `.agents/skills/.agents-kit.json` holds the same data for what is installed. Only `add` needs network (GitHub tarball + API, unauthenticated: 60 requests/hour); `check`/`sync`/`audit` never do — the kit copy is the single distribution source. Vendored skills keep their upstream license (`skills.json` records the SPDX identifier when found): review what you vendor, and re-run `add --force` to pick up an upstream update, then `sync` the fleet.
+
 ## Compatibility
 
 - **Upgrading from v1.x**: v1.x blocks were written in French with `agents-commun` markers. The script still recognizes them: `audit` reports them as "behind" and `sync` replaces them with the v2.0 block and its `agents-common` markers, the §7 staying byte-identical. See [`docs/MIGRATION.md`](docs/MIGRATION.md).
@@ -136,10 +164,14 @@ GitHub Actions CI (`.github/workflows/ci.yml`, Ubuntu + Windows, Python 3.11 and
 agents-kit/
 ├── agents-common.md              ← the canon (delimited, versioned block)
 ├── agents-common.versions.json   ← registry: sha256 fingerprint of each published version
+├── skills.json                   ← registry of the vendored common skills (source, commit, fingerprints)
+├── skills/                       ← vendored skills (the distribution source for the fleet)
 ├── CHANGELOG.md                  ← history of the common block and of the kit
 ├── template/AGENTS.template.md   ← full template (common block + §7 to fill in)
 ├── scripts/sync_agents.py        ← audit / check / sync / adopt / init / ledger / version (stdlib)
+├── scripts/skills_agents.py      ← skills add / list / check / sync / audit (stdlib)
 ├── tests/test_sync_agents.py     ← unittest tests (stdlib)
+├── tests/test_skills_agents.py   ← skills tests (offline: the GitHub seam is mocked)
 ├── .github/workflows/ci.yml      ← CI Ubuntu + Windows
 ├── .github/workflows/agents-md-check.yml ← reusable check called by the repositories' CI
 ├── template/agents-md.yml        ← caller workflow to copy into each repository

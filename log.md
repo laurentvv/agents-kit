@@ -46,3 +46,7 @@
 
 
 ## [2026-09-28] sync | using-superpowers: 13 repos pushed, roblox committed (no push), 4 installed only (no git/ignored); held back: ComfyUI-Majoor, my-claw, Trading-AI, novel2video-ai.
+## [2026-09-28] init | "skills updates" sprint: update (online) + deploy (fleet); contract frozen (17 criteria).
+## [2026-09-28] gen  | F-21..F-22: skills update (online re-import, re-pin, refusals) + skills deploy (fleet sweep via shared sync_repo).
+## [2026-09-28] eval | 15 new offline tests: 87 green; real update --dry-run online green; deploy --dry-run caught a dry-run status bug (fixed + regression test).
+## [2026-09-28] done | skills-updates sprint closed: F-21..F-24 archived; contract and progress in docs/journal/; push pending.

@@ -176,6 +176,41 @@
         "F-17",
         "F-19"
       ]
+    },
+    {
+      "id": "F-21",
+      "name": "skills update (online)",
+      "description": "Check each vendored skill against its upstream (resolve HEAD, fetch tarball), refresh the vendored copy + skills.json (ref, files, license, updated); refusals on hand-edited kit copies; --dry-run, --skill/--ref.",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
+      "id": "F-22",
+      "name": "skills deploy (fleet)",
+      "description": "Apply pending changes to every <root>/<repo> that already has .agents/skills; exclusions, --dry-run, --strict, --skill; per-repo refusals don't block the fleet.",
+      "status": "completed",
+      "dependencies": [
+        "F-21"
+      ]
+    },
+    {
+      "id": "F-23",
+      "name": "Offline tests for update/deploy",
+      "description": "Mocked GitHub seam: up to date / update / re-pin / hand-edited / upstream failure; deploy across a simulated fleet with refusals and exclusions.",
+      "status": "completed",
+      "dependencies": [
+        "F-21",
+        "F-22"
+      ]
+    },
+    {
+      "id": "F-24",
+      "name": "Docs + real-path validation",
+      "description": "README/CHANGELOG/\u00a77; real `update --dry-run` online and `deploy --dry-run` over the fleet, archived as evidence.",
+      "status": "completed",
+      "dependencies": [
+        "F-23"
+      ]
     }
   ]
 }

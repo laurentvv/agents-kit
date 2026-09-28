@@ -16,8 +16,19 @@ common SKILLS (folders holding a SKILL.md, e.g. github.com/obra/superpowers):
                           and maintain the lock .agents/skills/.agents-kit.json.
                           Refuses a hand-edited install without --force;
                           --dry-run: print the plan without writing.
+  skills update           ONLINE: re-import the vendored skills that moved on
+                          upstream (new commit) into the kit. --skill/--ref for a
+                          single skill and an explicit ref; --force also repairs a
+                          hand-edited kit copy; --dry-run: check without writing.
+  skills deploy [root]    LOCAL: propagate the kit skills to every <root>/<repo>
+                          that already has .agents/skills. --dry-run/--force/
+                          --strict/--skill/--exclude, like audit.
   skills audit [root]     State of every <root>/<repo>/.agents/skills
                           (same sweep as sync_agents audit; --strict for CI).
+
+Update cycle: `skills update` (online, once) then `skills deploy` (local, fleet).
+check/sync/deploy/audit never touch the network: the kit copy is the single
+distribution source.
 
 Installed skills are byte-for-byte copies. The lock fingerprints (sha256) tell an
 updatable install (files match the lock, the kit moved on) from a hand-edited one
@@ -431,13 +442,24 @@ def cmd_check(repo: Path, only: str | None, diff: bool) -> int:
 
 def cmd_sync(repo: Path, only: str | None, force: bool, dry_run: bool) -> int:
     registry = load_registry()
+    status = sync_repo(repo, registry, only, force, dry_run)
+    return 1 if status == "refused" else 0
+
+
+def sync_repo(repo: Path, registry: dict[str, dict], only: str | None, force: bool, dry_run: bool,
+              standalone: bool = True) -> str:
+    """Apply (or plan when dry_run) the kit skills in one repository.
+
+    Returns "refused" (a hand-edited install needs --force), "applied" (changes
+    written or planned) or "up_to_date" (nothing to do). Raises InputError.
+    """
     skills_dir, lock, plans = plan_repo(repo, registry, only)
     refused = [p for p in plans if p.action in ("hand_edited", "unmanaged")]
     if refused and not force:
         for p in refused:
             print(f"REFUSED: {skills_dir / p.name} - {STATES['hand_edited']} {p.detail}")
         print("  sync would overwrite local changes: 'skills check --diff', move what must stay, then --force.")
-        return 1
+        return "refused"
     changed = False
     for p in plans:
         if p.action == "up_to_date":
@@ -459,14 +481,122 @@ def cmd_sync(repo: Path, only: str | None, force: bool, dry_run: bool) -> int:
         apply_plan(skills_dir, p, registry[p.name])
         lock[p.name] = {"source": registry[p.name]["source"], "ref": registry[p.name]["ref"],
                         "files": registry[p.name]["files"]}
+    done = sum(1 for p in plans if p.action != "up_to_date")
     if dry_run:
-        print("\nDry run: nothing written.")
-        return 0
+        if standalone:
+            print("\nDry run: nothing written.")
+        return "applied" if done else "up_to_date"
     if changed:
         save_lock(skills_dir, lock)
-    done = sum(1 for p in plans if p.action != "up_to_date")
     print(f"Applied: {done} skill(s)" if done else "Nothing to do")
-    return 0
+    return "applied" if done else "up_to_date"
+
+
+def cmd_update(only: str | None, ref: str | None, force: bool, dry_run: bool) -> int:
+    """Online: refresh the vendored copies from their upstream sources."""
+    registry = load_registry()
+    if not registry:
+        print("NO SKILLS: nothing vendored in the kit (skills add <github-url> --skill <name>)")
+        return 2
+    if ref is not None and only is None:
+        raise InputError("--ref requires --skill NAME (pins are per skill)")
+    if only is not None and only not in registry:
+        raise InputError(f"UNKNOWN SKILL: {only} (vendored in the kit: {', '.join(sorted(registry))})")
+    print("Update check against the upstream sources (online):\n")
+    counts = {"up to date": 0, "updated": 0, "re-pinned": 0, "refused": 0, "failed": 0}
+    for name in sorted(registry):
+        if only is not None and name != only:
+            continue
+        entry = registry[name]
+        try:
+            sha = resolve_ref(entry["source"], ref if only is not None else None)
+            dirty = not kit_copy_matches(name, entry)
+            if sha == entry["ref"] and not dirty:
+                print(f"  up to date   {name} ({sha[:12]})")
+                counts["up to date"] += 1
+                continue
+            if dirty and not force:
+                print(f"  REFUSED      {name} - the kit copy changed since import (--force to re-import upstream)")
+                counts["refused"] += 1
+                continue
+            data = fetch_tarball(entry["source"], sha)
+            _, files = extract_skill(data, name)
+            new_files = {rel: hash_bytes(content) for rel, content in sorted(files.items())}
+            changed = sorted(k for k, v in new_files.items() if entry["files"].get(k) != v)
+            removed = sorted(k for k in entry["files"] if k not in new_files)
+            if changed or removed:
+                print(f"  update       {name} - {entry['ref'][:12]} -> {sha[:12]}"
+                      f" ({len(changed)} file(s) changed, {len(removed)} removed)")
+                for rel in removed:
+                    print(f"    - {rel}")
+                for rel in changed:
+                    print(f"    + {rel}")
+                action = "updated"
+            else:
+                print(f"  re-pin       {name} - content identical to the new commit {sha[:12]}")
+                action = "re-pinned"
+            if dirty:
+                print("    WARNING: the kit copy was hand-edited; --force re-imports upstream over it.")
+            if dry_run:
+                counts[action] += 1
+                continue
+            target = SKILLS_DIR / name
+            if target.exists():
+                shutil.rmtree(target)
+            for rel, content in sorted(files.items()):
+                dest = target / rel
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                dest.write_bytes(content)
+            entry["ref"] = sha
+            entry["files"] = new_files
+            entry["updated"] = local_today().isoformat()
+            license_id = detect_license(data)
+            if license_id:
+                entry["license"] = license_id
+            save_registry(registry)
+            counts[action] += 1
+        except InputError as e:
+            print(f"  FAILED       {name} - {e}")
+            counts["failed"] += 1
+    print(f"\nSummary: {counts['up to date']} up to date, {counts['updated']} updated, "
+          f"{counts['re-pinned']} re-pinned, {counts['refused']} refused, {counts['failed']} failed"
+          + (" (dry run: nothing written)" if dry_run else ""))
+    print("Then propagate: skills deploy [root] (or skills sync <repo> per repository).")
+    return 1 if (counts["refused"] or counts["failed"]) else 0
+
+
+def cmd_deploy(root: Path, only: str | None, force: bool, dry_run: bool, strict: bool,
+               exclude: list[str]) -> int:
+    """Local: propagate the kit skills to every repository that already has .agents/skills."""
+    registry = load_registry()
+    if not registry:
+        print("NO SKILLS: nothing vendored in the kit (skills add <github-url> --skill <name>)")
+        return 2
+    patterns = exclude + read_exclusions(root)
+    print(f"Deploy of the kit skills under: {root}\n")
+    stats: dict[str, int] = {}
+    for d in sorted(root.iterdir()):
+        if not (d.is_dir() and (d / DEPLOY_DIR).is_dir()):
+            continue
+        if any(fnmatch.fnmatch(d.name, p) for p in patterns):
+            print(f"  excluded        {d}")
+            stats["excluded"] = stats.get("excluded", 0) + 1
+            continue
+        try:
+            status = sync_repo(d, registry, only, force, dry_run, standalone=False)
+        except InputError as e:
+            print(f"  - {e}")
+            status = "error"
+        stats[status] = stats.get(status, 0) + 1
+        print(f"  {status:<15} {d}\n")
+    order = ["up_to_date", "applied", "refused", "error", "excluded"]
+    summary = ", ".join(f"{stats[k]} {k}" for k in order if stats.get(k))
+    print(f"Summary: {summary or 'no .agents/skills folder found'}")
+    if not dry_run and stats.get("applied"):
+        print("Update the fleet state with: skills audit [root]")
+    if stats.get("refused") or stats.get("error"):
+        return 1
+    return 1 if strict and stats.get("applied") else 0
 
 
 def cmd_audit(root: Path, exclude: list[str], strict: bool) -> int:
@@ -530,6 +660,21 @@ def main(argv: list[str] | None = None) -> int:
                     help="folder to skip (glob pattern, repeatable)")
     au.add_argument("--strict", action="store_true", help="exit 1 unless every repo is up to date")
 
+    u = sub.add_parser("update", help="re-import the vendored skills that moved upstream (online)")
+    u.add_argument("--skill", help="limit to this skill")
+    u.add_argument("--ref", help="pin an explicit ref (requires --skill)")
+    u.add_argument("--force", action="store_true", help="also re-import over a hand-edited kit copy")
+    u.add_argument("--dry-run", action="store_true", help="check and plan, write nothing")
+
+    dep = sub.add_parser("deploy", help="propagate the kit skills to every repo with .agents/skills")
+    dep.add_argument("root", nargs="?", type=Path, default=KIT.parent)
+    dep.add_argument("--skill", help="limit to this skill")
+    dep.add_argument("--force", action="store_true", help="overwrite hand-edited installs")
+    dep.add_argument("--dry-run", action="store_true", help="print the whole-fleet plan without writing")
+    dep.add_argument("--strict", action="store_true", help="exit 1 unless every repo is up to date")
+    dep.add_argument("--exclude", action="append", default=[], metavar="PATTERN",
+                     help="folder to skip (glob pattern, repeatable)")
+
     args = ap.parse_args(argv)
     try:
         if args.cmd == "add":
@@ -545,6 +690,13 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"Root not found: {args.root}")
                 return 2
             return cmd_audit(args.root, args.exclude, args.strict)
+        if args.cmd == "update":
+            return cmd_update(args.skill, args.ref, args.force, args.dry_run)
+        if args.cmd == "deploy":
+            if not args.root.is_dir():
+                print(f"Root not found: {args.root}")
+                return 2
+            return cmd_deploy(args.root, args.skill, args.force, args.dry_run, args.strict, args.exclude)
         ap.error(f"unknown command {args.cmd!r}")
     except InputError as e:
         print(e)

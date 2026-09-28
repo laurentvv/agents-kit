@@ -126,9 +126,15 @@ uv run --no-project python scripts/skills_agents.py list
 uv run --no-project python scripts/skills_agents.py sync ../my-project          # [--dry-run] [--skill NAME] [--force]
 uv run --no-project python scripts/skills_agents.py check ../my-project [--diff]
 
+# Update cycle: online check, then local fleet deployment
+uv run --no-project python scripts/skills_agents.py update [--dry-run] [--skill NAME] [--ref REF]
+uv run --no-project python scripts/skills_agents.py deploy [--dry-run] [--strict] [--skill NAME]
+
 # Fleet sweep (same spirit as the AGENTS.md audit)
 uv run --no-project python scripts/skills_agents.py audit [--strict] [--exclude PATTERN]
 ```
+
+`update` re-imports the vendored skills whose upstream moved on (new commit): the kit copy and `skills.json` are refreshed (ref, files, license, `updated` date); a hand-edited kit copy is refused without `--force`; identical content on a new commit only moves the pin. `deploy` then propagates to every `<root>/<repo>` that already has `.agents/skills` — same refusals per repository (a hand-edited install is skipped, the rest of the fleet deploys), `--strict` for CI. Repositories without `.agents/skills` are never touched: they opt in via `skills sync <repo>`.
 
 | Per-skill state | Meaning | Action |
 |---|---|---|

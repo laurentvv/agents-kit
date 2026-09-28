@@ -124,6 +124,9 @@ uv run --no-project python scripts/skills_agents.py add https://github.com/<owne
 uv run --no-project python scripts/skills_agents.py list
 uv run --no-project python scripts/skills_agents.py sync ../<repo> [--dry-run] [--skill <name>] [--force]
 uv run --no-project python scripts/skills_agents.py check ../<repo> [--diff]
+# update cycle: online refresh of the vendored copies, then local fleet deployment
+uv run --no-project python scripts/skills_agents.py update [--dry-run] [--skill <name>] [--ref <ref>] [--force]
+uv run --no-project python scripts/skills_agents.py deploy [--dry-run] [--strict] [--skill <name>]
 uv run --no-project python scripts/skills_agents.py audit [--strict]
 ```
 

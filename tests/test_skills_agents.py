@@ -364,6 +364,192 @@ class Encoding(Kit):
         self.assertIn("INVALID REGISTRY", out)
 
 
+# ------------------------------------------------------- update (online) / deploy
+
+class Update(Kit):
+    def test_upstream_unchanged_is_up_to_date(self):
+        self.vendored()
+        before = self.registry.read_bytes()
+        self.github()  # same sha, same content
+        code, out = run("update")
+        self.assertEqual(code, 0, out)
+        self.assertIn("up to date   using-x", out)
+        self.assertEqual(self.registry.read_bytes(), before)
+
+    def test_upstream_moved_updates_the_vendored_copy(self):
+        self.vendored()
+        self.github(SHA2, fake_tarball("using-x", BODY2))
+        code, out = run("update")
+        self.assertEqual(code, 0, out)
+        self.assertIn("update       using-x", out)
+        self.assertIn("+ SKILL.md", out)
+        self.assertEqual((sa.SKILLS_DIR / "using-x" / "SKILL.md").read_bytes(), BODY2)
+        entry = json.loads(self.registry.read_text(encoding="utf-8"))["skills"]["using-x"]
+        self.assertEqual(entry["ref"], SHA2)
+        self.assertEqual(entry["updated"], sa.local_today().isoformat())
+        # the fleet sees the update through a plain sync
+        r = self.repo("r")
+        self.assertEqual(run("sync", r)[0], 0)
+        self.assertEqual((r / ".agents" / "skills" / "using-x" / "SKILL.md").read_bytes(), BODY2)
+
+    def test_repin_when_content_identical(self):
+        self.vendored()
+        self.github(SHA2, fake_tarball("using-x", BODY1))  # new commit, same files
+        code, out = run("update")
+        self.assertEqual(code, 0, out)
+        self.assertIn("re-pin       using-x", out)
+        self.assertEqual(json.loads(self.registry.read_text(encoding="utf-8"))["skills"]["using-x"]["ref"], SHA2)
+        self.assertEqual((sa.SKILLS_DIR / "using-x" / "SKILL.md").read_bytes(), BODY1)
+
+    def test_hand_edited_kit_copy_refused_then_force(self):
+        self.vendored()
+        write(sa.SKILLS_DIR / "using-x" / "SKILL.md", "# local edit\n")
+        self.github(SHA2, fake_tarball("using-x", BODY2))
+        code, out = run("update")
+        self.assertEqual(code, 1)
+        self.assertIn("REFUSED", out)
+        self.assertEqual((sa.SKILLS_DIR / "using-x" / "SKILL.md").read_text(encoding="utf-8"), "# local edit\n")
+        code, out = run("update", "--force")
+        self.assertEqual(code, 0, out)
+        self.assertEqual((sa.SKILLS_DIR / "using-x" / "SKILL.md").read_bytes(), BODY2)
+
+    def test_dry_run_writes_nothing(self):
+        self.vendored()
+        before = self.registry.read_bytes()
+        self.github(SHA2, fake_tarball("using-x", BODY2))
+        code, out = run("update", "--dry-run")
+        self.assertEqual(code, 0, out)
+        self.assertIn("update       using-x", out)
+        self.assertIn("dry run: nothing written", out)
+        self.assertEqual(self.registry.read_bytes(), before)
+        self.assertEqual((sa.SKILLS_DIR / "using-x" / "SKILL.md").read_bytes(), BODY1)
+
+    def test_skill_and_ref_flags(self):
+        self.vendored()
+        resolve = self.github(SHA2, fake_tarball("using-x", BODY2))
+        code, out = run("update", "--skill", "using-x", "--ref", "v9.9")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(resolve.call_args, mock.call("obra/superpowers", "v9.9"))
+        self.assertEqual((sa.SKILLS_DIR / "using-x" / "SKILL.md").read_bytes(), BODY2)
+
+    def test_ref_without_skill_and_unknown_skill(self):
+        self.vendored()
+        code, out = run("update", "--ref", "v1.0")
+        self.assertEqual(code, 2)
+        self.assertIn("--ref requires --skill", out)
+        code, out = run("update", "--skill", "ghost")
+        self.assertEqual(code, 2)
+        self.assertIn("UNKNOWN SKILL", out)
+
+    def test_upstream_failure_isolated(self):
+        self.vendored()
+        self.vendored(name="other")
+        registry = json.loads(self.registry.read_text(encoding="utf-8"))
+        registry["skills"]["other"]["source"] = "someone/gone"
+        write(self.registry, json.dumps(registry))
+        reasons = {"someone/gone": "GITHUB: HTTP 404"}
+
+        def resolve(slug, ref):
+            if slug in reasons:
+                raise sa.InputError(reasons[slug])
+            return SHA2
+
+        def fetch(slug, sha):
+            if slug in reasons:
+                raise sa.InputError(reasons[slug])
+            return fake_tarball("using-x", BODY2)
+
+        for target, value in (("resolve_ref", mock.Mock(side_effect=resolve)),
+                              ("fetch_tarball", mock.Mock(side_effect=fetch))):
+            patch = mock.patch.object(sa, target, value)
+            patch.start()
+            self.addCleanup(patch.stop)
+        code, out = run("update")
+        self.assertEqual(code, 1, out)
+        self.assertIn("FAILED       other", out)
+        self.assertIn("update       using-x", out)
+        self.assertEqual((sa.SKILLS_DIR / "using-x" / "SKILL.md").read_bytes(), BODY2)
+
+
+class Deploy(Kit):
+    def prep(self):
+        self.vendored()
+        self.up_to_date = self.repo("fresh")
+        self.behind = self.repo("late")
+        self.edited = self.repo("edited")
+        for r in (self.up_to_date, self.behind, self.edited):
+            self.assertEqual(run("sync", r)[0], 0)
+        self.vendored(sha=SHA2, body=BODY2)  # the kit moves on
+        self.assertEqual(run("sync", self.up_to_date)[0], 0)  # fresh catches up
+        write(self.edited / ".agents" / "skills" / "using-x" / "SKILL.md", "# local\n")
+
+    def test_fleet_states(self):
+        self.prep()
+        self.repo("no-skills")  # skipped: no .agents/skills
+        code, out = run("deploy", self.fleet)
+        self.assertEqual(code, 1, out)
+        self.assertIn("up_to_date", out)
+        self.assertIn("applied", out)
+        self.assertIn("refused", out)
+        self.assertNotIn("no-skills", out)
+        self.assertEqual((self.behind / ".agents" / "skills" / "using-x" / "SKILL.md").read_bytes(), BODY2)
+        self.assertEqual(
+            (self.edited / ".agents" / "skills" / "using-x" / "SKILL.md").read_text(encoding="utf-8"), "# local\n")
+
+    def test_force_overwrites_the_refused_one(self):
+        self.prep()
+        code, out = run("deploy", self.fleet, "--force")
+        self.assertEqual(code, 0, out)
+        self.assertEqual((self.edited / ".agents" / "skills" / "using-x" / "SKILL.md").read_bytes(), BODY2)
+
+    def test_dry_run_writes_nothing(self):
+        self.prep()
+        before = (self.behind / ".agents" / "skills" / "using-x" / "SKILL.md").read_bytes()
+        code, out = run("deploy", self.fleet, "--dry-run")
+        self.assertEqual(code, 1, out)
+        self.assertIn("+ SKILL.md", out)
+        self.assertEqual((self.behind / ".agents" / "skills" / "using-x" / "SKILL.md").read_bytes(), before)
+
+    def test_dry_run_reports_up_to_date_repos_correctly(self):
+        # regression: dry-run used to report every repo as "applied"
+        self.vendored()
+        a, b = self.repo("a"), self.repo("b")
+        for r in (a, b):
+            self.assertEqual(run("sync", r)[0], 0)
+        code, out = run("deploy", self.fleet, "--dry-run")
+        self.assertEqual(code, 0, out)
+        self.assertIn("2 up_to_date", out)
+        self.assertNotIn("applied", out.replace("up_to_date", ""))
+        self.assertEqual(run("deploy", self.fleet, "--dry-run", "--strict")[0], 0)
+
+    def test_exclusions_and_strict(self):
+        self.prep()
+        self.assertEqual(run("deploy", self.fleet, "--exclude", "late", "--exclude", "edited", "--strict")[0], 0)
+        write(self.fleet / ".agents-kit-ignore", "edited\nlate\n")
+        self.assertEqual(run("deploy", self.fleet, "--strict")[0], 0)
+
+    def test_skill_filter(self):
+        self.vendored()
+        self.vendored(name="other")
+        r = self.repo("r")
+        (r / ".agents" / "skills").mkdir(parents=True)  # deploy skips repos without the folder
+        code, out = run("deploy", self.fleet, "--skill", "other", "--force")
+        self.assertEqual(code, 0, out)
+        self.assertTrue((r / ".agents" / "skills" / "other").exists())
+        self.assertFalse((r / ".agents" / "skills" / "using-x").exists())
+
+    def test_broken_repo_does_not_block_the_fleet(self):
+        self.prep()
+        broken = self.repo("broken")
+        skills_dir = broken / ".agents" / "skills"
+        skills_dir.mkdir(parents=True)
+        (skills_dir / ".agents-kit.json").write_bytes(b"\xff\xfe garbage")
+        code, out = run("deploy", self.fleet)
+        self.assertEqual(code, 1, out)
+        self.assertIn("error", out)
+        self.assertEqual((self.behind / ".agents" / "skills" / "using-x" / "SKILL.md").read_bytes(), BODY2)
+
+
 class Invariants(unittest.TestCase):
     def test_stdlib_only(self):
         tree = ast.parse((SCRIPTS / "skills_agents.py").read_text(encoding="utf-8"))

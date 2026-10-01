@@ -9,6 +9,10 @@ common SKILLS (folders holding a SKILL.md, e.g. github.com/obra/superpowers):
                           kit (skills/<NAME>/) and record it in skills.json
                           (source, resolved commit sha, per-file sha256).
                           --force: replace an already vendored skill.
+  skills author <name> [--license SPDX] [--force]
+                          Register a skill authored in the kit (skills/<NAME>/,
+                          written by hand, no upstream) in skills.json. After an
+                          edit of the kit copy, re-register it with --force.
   skills list             Vendored skills: name, source@ref, files, import date.
   skills check <repo>     Are the installed skills identical to the kit?
                           (--diff: list the files that would change)
@@ -94,6 +98,7 @@ SHA_RE = re.compile(r"[0-9a-f]{40}")
 GITHUB_RE = re.compile(r"github\.com[/:]([\w.-]+)/([\w.-]+?)(?:\.git)?/?$")
 SPDX_RE = re.compile(r"SPDX-License-Identifier:\s*([A-Za-z0-9._-]+)")
 LICENSE_BASENAMES = ("LICENSE", "LICENCE", "COPYING")
+AUTHORED_SOURCE = "(authored)"  # registry source of a skill with no upstream: authored in the kit
 
 STATES = {
     "up_to_date": "up to date",
@@ -399,14 +404,45 @@ def cmd_add(url: str, name: str | None, ref: str | None, force: bool) -> int:
     return 0
 
 
+def cmd_author(name: str, license_id: str | None, force: bool) -> int:
+    """Register a kit-authored skill: the agent wrote skills/<name>/ by hand."""
+    if NAME_RE.fullmatch(name) is None:
+        raise InputError(f"INVALID SKILL NAME: {name} (letters, digits, dot, dash, underscore)")
+    folder = SKILLS_DIR / name
+    if not folder.is_dir() or not (folder / SKILL_MARKER).is_file():
+        raise InputError(f"NO SKILL MARKER: {folder} holds no {SKILL_MARKER} (write the skill first)")
+    registry = load_registry()
+    entry_files = fingerprints_of(folder)
+    existing = registry.get(name)
+    if existing is not None:
+        if existing.get("source") == AUTHORED_SOURCE and existing.get("files") == entry_files:
+            print(f"ALREADY UP TO DATE: {name} (authored in the kit)")
+            return 0
+        if not force:
+            print(f"REFUSED: {name} is already vendored ({existing.get('source', '?')}) - --force to re-register it.")
+            return 1
+    entry = {"source": AUTHORED_SOURCE, "ref": local_today().isoformat(),
+             "imported": local_today().isoformat(), "files": entry_files}
+    if license_id:
+        entry["license"] = license_id
+    registry[name] = entry
+    save_registry(registry)
+    print(f"{'Re-registered' if existing else 'Registered'}: {name} "
+          f"(authored in the kit, {len(entry_files)} file(s))")
+    print("Deploy it with: uv run --no-project python scripts/skills_agents.py sync <repo>")
+    return 0
+
+
 def cmd_list() -> int:
     registry = load_registry()
     if not registry:
-        print("No skill vendored yet: skills add <github-url> --skill <name>")
+        print("No skill vendored yet: skills add <github-url> --skill <name> (or skills author <name>)")
         return 0
     for name, entry in sorted(registry.items()):
         license_id = f"  license {entry['license']}" if entry.get("license") else ""
-        print(f"  {name:<28} {entry['source']}@{entry['ref'][:12]}  "
+        origin = ("authored in the kit" if entry["source"] == AUTHORED_SOURCE
+                  else f"{entry['source']}@{entry['ref'][:12]}")
+        print(f"  {name:<28} {origin}  "
               f"{len(entry['files'])} file(s)  imported {entry.get('imported', '?')}{license_id}")
     return 0
 
@@ -508,6 +544,11 @@ def cmd_update(only: str | None, ref: str | None, force: bool, dry_run: bool) ->
         if only is not None and name != only:
             continue
         entry = registry[name]
+        if entry["source"] == AUTHORED_SOURCE:
+            print(f"  authored     {name} (no upstream - edit skills/{name}/ in the kit, "
+                  f"then 'skills author {name} --force')")
+            counts["up to date"] += 1
+            continue
         try:
             sha = resolve_ref(entry["source"], ref if only is not None else None)
             dirty = not kit_copy_matches(name, entry)
@@ -643,6 +684,11 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--ref", help="branch, tag or commit (default: default branch HEAD)")
     a.add_argument("--force", action="store_true", help="replace an already vendored skill")
 
+    at = sub.add_parser("author", help="register a skill authored in the kit (skills/<name>/)")
+    at.add_argument("name", help="skill folder name under skills/")
+    at.add_argument("--license", help="SPDX identifier recorded in the registry (e.g. MIT)")
+    at.add_argument("--force", action="store_true", help="re-register after an edit of the kit copy")
+
     sub.add_parser("list", help="vendored skills")
 
     c = sub.add_parser("check", help="are the installed skills up to date?")
@@ -679,6 +725,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.cmd == "add":
             return cmd_add(args.url, args.skill, args.ref, args.force)
+        if args.cmd == "author":
+            return cmd_author(args.name, args.license, args.force)
         if args.cmd == "list":
             return cmd_list()
         if args.cmd == "check":

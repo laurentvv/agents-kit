@@ -91,7 +91,7 @@ Never rely on the context window alone: it degrades, gets compressed, gets erase
 
 ### Mission / scope
 
-Canonical repository of the **common AGENTS.md base**: the delimited block in `agents-common.md`, the instantiation template and the `scripts/sync_agents.py` script (audit / check / sync / adopt / init / ledger / version) that distributes it to neighbouring repositories. The kit also vendors and distributes **common agent skills** (`scripts/skills_agents.py`: add / list / check / sync / audit) into the repositories' `.agents/skills/` folders. Public GitHub project, MIT license. The kit contains **no machine path and no specific repository name** — the specific part lives in each consuming repository.
+Canonical repository of the **common AGENTS.md base**: the delimited block in `agents-common.md`, the instantiation template and the `scripts/sync_agents.py` script (audit / check / sync / adopt / init / ledger / version) that distributes it to neighbouring repositories. The kit also vendors and distributes **common agent skills** (`scripts/skills_agents.py`: add / author / list / check / sync / audit) into the repositories' `.agents/skills/` folders. Public GitHub project, MIT license. The kit contains **no machine path and no specific repository name** — the specific part lives in each consuming repository.
 
 ### Declared locations (deviations from the common block)
 
@@ -121,6 +121,7 @@ uvx ruff@0.16.9 check scripts tests   # pinned version, identical to CI
 uv run --no-project python scripts/sync_agents.py check . && uv run --no-project python scripts/sync_agents.py check . --file template/AGENTS.template.md
 # common skills: vendor once in the kit, then deploy to the repositories' .agents/skills/
 uv run --no-project python scripts/skills_agents.py add https://github.com/<owner>/<repo> --skill <name> [--ref <ref>] [--force]
+uv run --no-project python scripts/skills_agents.py author <name> --license MIT [--force]
 uv run --no-project python scripts/skills_agents.py list
 uv run --no-project python scripts/skills_agents.py sync ../<repo> [--dry-run] [--skill <name>] [--force]
 uv run --no-project python scripts/skills_agents.py check ../<repo> [--diff]

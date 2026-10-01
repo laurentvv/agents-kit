@@ -212,6 +212,91 @@ class List(Kit):
         self.assertIn("license MIT", out)
 
 
+# ----------------------------------------------------------------- author
+
+class Author(Kit):
+    def write_skill(self, name: str = "docs-x", body: bytes = BODY1) -> Path:
+        folder = sa.SKILLS_DIR / name
+        folder.mkdir(parents=True, exist_ok=True)
+        write(folder / "SKILL.md", body.decode("utf-8"))
+        return folder
+
+    def test_registers_files_and_license(self):
+        self.write_skill()
+        code, out = run("author", "docs-x", "--license", "MIT")
+        self.assertEqual(code, 0, out)
+        entry = json.loads(self.registry.read_text(encoding="utf-8"))["skills"]["docs-x"]
+        self.assertEqual(entry["source"], sa.AUTHORED_SOURCE)
+        self.assertEqual(entry["files"], {"SKILL.md": sha256_of(BODY1)})
+        self.assertEqual(entry["license"], "MIT")
+        self.assertEqual(entry["imported"], sa.local_today().isoformat())
+        self.assertIn("Registered: docs-x", out)
+
+    def test_refuses_missing_folder_or_marker(self):
+        code, out = run("author", "ghost")
+        self.assertEqual(code, 2)
+        self.assertIn("NO SKILL MARKER", out)
+        (sa.SKILLS_DIR / "hollow").mkdir()
+        code, out = run("author", "hollow")
+        self.assertEqual(code, 2)
+        self.assertIn("NO SKILL MARKER", out)
+
+    def test_invalid_name(self):
+        code, out = run("author", "../escape")
+        self.assertEqual(code, 2)
+        self.assertIn("INVALID SKILL NAME", out)
+
+    def test_idempotent_then_force_refingerprints(self):
+        self.write_skill()
+        self.assertEqual(run("author", "docs-x")[0], 0)
+        code, out = run("author", "docs-x")
+        self.assertEqual(code, 0, out)
+        self.assertIn("ALREADY UP TO DATE", out)
+        write(sa.SKILLS_DIR / "docs-x" / "SKILL.md", "# edited\n")
+        code, out = run("author", "docs-x")
+        self.assertEqual(code, 1)
+        self.assertIn("REFUSED", out)
+        code, out = run("author", "docs-x", "--force")
+        self.assertEqual(code, 0, out)
+        self.assertIn("Re-registered", out)
+        entry = json.loads(self.registry.read_text(encoding="utf-8"))["skills"]["docs-x"]
+        self.assertEqual(entry["files"]["SKILL.md"], sha256_of(b"# edited\n"))
+
+    def test_refuses_to_shadow_a_github_vendored_skill(self):
+        self.vendored()
+        self.write_skill(name="using-x")
+        code, out = run("author", "using-x")
+        self.assertEqual(code, 1)
+        self.assertIn("REFUSED", out)
+        self.assertIn("obra/superpowers", out)
+
+    def test_update_skips_authored_skills_offline(self):
+        # urlopen stays poisoned: any GitHub attempt for the authored skill must not happen
+        self.write_skill()
+        self.assertEqual(run("author", "docs-x")[0], 0)
+        code, out = run("update")
+        self.assertEqual(code, 0, out)
+        self.assertIn("authored     docs-x", out)
+        self.assertNotIn("FAILED", out)
+
+    def test_authored_skill_deploys_like_any_other(self):
+        self.write_skill()
+        self.assertEqual(run("author", "docs-x", "--license", "MIT")[0], 0)
+        r = self.repo("r")
+        self.assertEqual(run("sync", r)[0], 0)
+        self.assertEqual((r / ".agents" / "skills" / "docs-x" / "SKILL.md").read_bytes(), BODY1)
+        self.assertEqual(self.lock(r)["skills"]["docs-x"]["source"], sa.AUTHORED_SOURCE)
+        self.assertEqual(run("check", r)[0], 0)
+
+    def test_list_shows_authored_origin(self):
+        self.write_skill()
+        self.assertEqual(run("author", "docs-x")[0], 0)
+        code, out = run("list")
+        self.assertEqual(code, 0, out)
+        self.assertIn("docs-x", out)
+        self.assertIn("authored in the kit", out)
+
+
 # ------------------------------------------------------------------- deploy
 
 class Sync(Kit):

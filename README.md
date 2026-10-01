@@ -120,6 +120,8 @@ The kit also distributes **common agent skills** (folders holding a `SKILL.md`, 
 ```bash
 # Vendor a skill in the kit once (review point: skill content is external data)
 uv run --no-project python scripts/skills_agents.py add https://github.com/obra/superpowers --skill using-superpowers
+# ...or register a skill authored in the kit (skills/<name>/ written by hand, no upstream)
+uv run --no-project python scripts/skills_agents.py author docs-fishing --license MIT  # [--force] after an edit
 uv run --no-project python scripts/skills_agents.py list
 
 # Deploy into a repository: .agents/skills/<name>/ + lock .agents/skills/.agents-kit.json
@@ -145,7 +147,7 @@ uv run --no-project python scripts/skills_agents.py audit [--strict] [--exclude 
 | unmanaged | folder exists but was not installed by the kit | `sync --force` to take it over |
 | orphan | still installed but no longer vendored in the kit | pruned by `sync` |
 
-Provenance and drift detection: `skills.json` (kit) records for each skill its source, the pinned commit, the import date, the license and the per-file sha256 fingerprints; the per-repository lock `.agents/skills/.agents-kit.json` holds the same data for what is installed. Only `add` needs network (GitHub tarball + API, unauthenticated: 60 requests/hour); `check`/`sync`/`audit` never do — the kit copy is the single distribution source. Vendored skills keep their upstream license (`skills.json` records the SPDX identifier when found): review what you vendor, and re-run `add --force` to pick up an upstream update, then `sync` the fleet.
+Provenance and drift detection: `skills.json` (kit) records for each skill its source, the pinned commit, the import date, the license and the per-file sha256 fingerprints; the per-repository lock `.agents/skills/.agents-kit.json` holds the same data for what is installed. Only `add` needs network (GitHub tarball + API, unauthenticated: 60 requests/hour); `check`/`sync`/`audit` never do — the kit copy is the single distribution source. Vendored skills keep their upstream license (`skills.json` records the SPDX identifier when found): review what you vendor, and re-run `add --force` to pick up an upstream update, then `sync` the fleet. **Authored skills** (`source: "(authored)"`) have no upstream: `update` skips them, and after editing the kit copy you re-register with `author <name> --force`; their license is recorded at registration time.
 
 ## Compatibility
 
@@ -175,7 +177,7 @@ agents-kit/
 ├── CHANGELOG.md                  ← history of the common block and of the kit
 ├── template/AGENTS.template.md   ← full template (common block + §7 to fill in)
 ├── scripts/sync_agents.py        ← audit / check / sync / adopt / init / ledger / version (stdlib)
-├── scripts/skills_agents.py      ← skills add / list / check / sync / audit (stdlib)
+├── scripts/skills_agents.py      ← skills add / author / list / check / sync / audit (stdlib)
 ├── tests/test_sync_agents.py     ← unittest tests (stdlib)
 ├── tests/test_skills_agents.py   ← skills tests (offline: the GitHub seam is mocked)
 ├── .github/workflows/ci.yml      ← CI Ubuntu + Windows

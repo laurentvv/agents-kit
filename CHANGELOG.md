@@ -2,6 +2,11 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Tooling — 2026-10-02: kit-authored skills + first one
+
+- New `skills author <name> [--license SPDX] [--force]`: registers a skill **authored in the kit** (skills/<name>/ written by hand, no upstream) in `skills.json` — same fingerprints, same deploy path as an imported skill (`source: "(authored)"`). `update` skips authored skills (nothing to re-import online); after editing the kit copy, re-register with `--force`. Refuses to shadow a GitHub-vendored skill without `--force`. 8 regression tests (95 total).
+- First authored skill: **`docs-fishing`** (MIT) — fetch and read the upstream official documentation of any engine/model/tool BEFORE testing, debugging, upgrading or adopting it: inventory the targets from the project, map the sources by yield (upstream `docs/` > model cards + org listing > `llms.txt` + `.md` endpoints > README at the pinned ref), fetch into a pinned scratch area, read with the three questions (unused capabilities / our known blocks / changes since our version), cross-check against the local binaries, record the findings in the project state files. Implements the common block rule "read the upstream docs before acting".
+
 ## Tooling — 2026-09-28: common skills management
 
 - New script `scripts/skills_agents.py` (standard library only, no npx/Node): it vendors **common agent skills** into the kit (`skills/<name>/`, registry `skills.json`: source, pinned commit, import date, license, per-file sha256) and deploys them into every repository's `.agents/skills/` folder, with a per-repository lock (`.agents/skills/.agents-kit.json`).

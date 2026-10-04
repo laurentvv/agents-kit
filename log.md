@@ -13,3 +13,4 @@
 ## [2026-10-04] err | lazy-skills experiment (lazy loading lib) removed on user decision: ZCode/Claude Code lazy-load skills natively; a standalone loader pays off only with a real custom-orchestrator consumer.
 ## [2026-10-04] sync | explainer rollout: merged to main (f3ebd24) + branch deleted; deployed 38, committed 33 (2 not-git, 3 with .agents/ gitignored by local choice); 3 pre-existing hand-edited held.
 ## [2026-10-04] eval | Self-test of explainer: skill body loaded on demand by a session started BEFORE the deploy (harness index not frozen at start); rung 2 applied, artifact scratch/fleet-rollout-2026-10-04.md.
+## [2026-10-04] fix | explainer revised: lowest-rung-first produced weak artifacts; HTML page is now the DEFAULT artifact + quality bar (screenshot before delivery), markdown never the deliverable; re-registered, redeploy follows.

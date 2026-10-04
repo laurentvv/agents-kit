@@ -17,3 +17,4 @@
 ## [2026-10-04] done | explainer v3 (artifact in the reader's chat language) redeployed: 38 applied, 33 fleet commits. Self-test v2: French dashboard, skills + AGENTS.md axes, scratch/fleet-rollout-2026-10-04.html, screenshot-audited + filter tested.
 ## [2026-10-04] init | project-dashboard skill (fleet-wide visual status page from ledger + git + checks); scratch/ added to English-guard SKIP + .gitignore (chat-language artifacts, never committed).
 ## [2026-10-04] done | project-dashboard registered (MIT) + dogfood synced; 95 tests green, ruff green, both checks green; fleet deploy follows.
+## [2026-10-04] sync | Kit main pushed to origin (df622c3 + log): explainer v2/v3 + project-dashboard + guard carve-outs public; fleet repos keep their local deploy commits (push on request).

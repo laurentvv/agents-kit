@@ -10,3 +10,4 @@
 ## [2026-10-03] done | compare-IA-decision initiated: AGENTS v2.2 + ledger (root) + skills (docs-fishing, using-superpowers) + git bootstrap (1c926b6); both checks green.
 ## [2026-10-04] init | explainer skill (kit-authored): escalation ladder controlled English > diagram > single-file HTML > gated video; register + dogfood sync.
 ## [2026-10-04] done | explainer registered (MIT) + dogfood synced; 95 tests green, ruff green, both checks green; .zcode/ added to English-guard SKIP + .gitignore (harness plans are French).
+## [2026-10-04] err | lazy-skills experiment (lazy loading lib) removed on user decision: ZCode/Claude Code lazy-load skills natively; a standalone loader pays off only with a real custom-orchestrator consumer.

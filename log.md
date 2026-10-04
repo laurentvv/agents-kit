@@ -21,3 +21,4 @@
 ## [2026-10-04] done | Fleet push on request: 26 pushed (23 main/master + 3 existing feature branches); 6 held diverged (remotes moved elsewhere); 4 held no remote repo on GitHub (creation needs user decision); novel2video-ia WIP untouched.
 ## [2026-10-04] init | agy skill (kit-authored): headless Antigravity CLI wrapper, image generation first; live trials in scratch/agy-lab before authoring (user request).
 ## [2026-10-04] done | agy skill registered (MIT) + dogfood synced after 6 live trials on 1.2.16 (recipe, salvage, --continue); 95 tests, ruff, all checks green.
+## [2026-10-04] sync | agy rollout: PR #4 squash-merged (cb4d45c, CI green), branch deleted; fleet deploy 38 applied, 33 committed (3 .agents gitignored, 2 not-git); 3 hand-edited held (pre-existing).

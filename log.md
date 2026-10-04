@@ -19,3 +19,5 @@
 ## [2026-10-04] done | project-dashboard registered (MIT) + dogfood synced; 95 tests green, ruff green, both checks green; fleet deploy follows.
 ## [2026-10-04] sync | Kit main pushed to origin (df622c3 + log): explainer v2/v3 + project-dashboard + guard carve-outs public; fleet repos keep their local deploy commits (push on request).
 ## [2026-10-04] done | Fleet push on request: 26 pushed (23 main/master + 3 existing feature branches); 6 held diverged (remotes moved elsewhere); 4 held no remote repo on GitHub (creation needs user decision); novel2video-ia WIP untouched.
+## [2026-10-04] init | agy skill (kit-authored): headless Antigravity CLI wrapper, image generation first; live trials in scratch/agy-lab before authoring (user request).
+## [2026-10-04] done | agy skill registered (MIT) + dogfood synced after 6 live trials on 1.2.16 (recipe, salvage, --continue); 95 tests, ruff, all checks green.

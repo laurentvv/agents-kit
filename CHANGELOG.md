@@ -2,6 +2,10 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Tooling — 2026-10-04: agy skill
+
+- New authored skill: **`agy`** (MIT) — drive Google Antigravity's `agy` CLI headless, image generation first: the verified recipe (disposable cwd + `--dangerously-skip-permissions`), the three-point success check (status + `denied_actions`, magic bytes on disk, image actually looked at — a soft-denied run still exits 0 with status SUCCESS), salvage of generated images from `~/.gemini/antigravity-cli/brain/<conversation_id>/` after a denied copy, reference-based iteration via `--continue` / `--conversation`, and machine-readable output handling (text / json / stream-json, parsed with Python — `jq` not assumed). Every rule measured live on agy 1.2.16 (2026-10-04), including the doc-vs-binary drift (`--print-timeout` default, `--effort xhigh|max`, undocumented `denied_actions`) and the workspace-context leak (the enclosing repo's AGENTS.md and `.agents/skills/` shape the run). Official reference pinned at fetch time: https://antigravity.google/docs/cli/headless/
+
 ## Tooling — 2026-10-04: project-dashboard skill
 
 - New authored skill: **`project-dashboard`** (MIT) — build a visual dashboard of a project's real state as a single-file interactive HTML page in the reader's chat language: features by status, contract criteria with validation evidence, tests/CI, git position, debts and lessons. Every number is measured from the repository itself (ledger files, git, command outputs) with its source cited; stale or unverifiable data is labeled, never smoothed. Quality bar shared with `explainer`: deliberate design, screenshot inspected before delivery. Read-only on the repository; the artifact is disposable under `scratch/`.

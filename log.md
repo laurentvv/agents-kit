@@ -15,3 +15,5 @@
 ## [2026-10-04] eval | Self-test of explainer: skill body loaded on demand by a session started BEFORE the deploy (harness index not frozen at start); rung 2 applied, artifact scratch/fleet-rollout-2026-10-04.md.
 ## [2026-10-04] fix | explainer revised: lowest-rung-first produced weak artifacts; HTML page is now the DEFAULT artifact + quality bar (screenshot before delivery), markdown never the deliverable; re-registered, redeploy follows.
 ## [2026-10-04] done | explainer v3 (artifact in the reader's chat language) redeployed: 38 applied, 33 fleet commits. Self-test v2: French dashboard, skills + AGENTS.md axes, scratch/fleet-rollout-2026-10-04.html, screenshot-audited + filter tested.
+## [2026-10-04] init | project-dashboard skill (fleet-wide visual status page from ledger + git + checks); scratch/ added to English-guard SKIP + .gitignore (chat-language artifacts, never committed).
+## [2026-10-04] done | project-dashboard registered (MIT) + dogfood synced; 95 tests green, ruff green, both checks green; fleet deploy follows.

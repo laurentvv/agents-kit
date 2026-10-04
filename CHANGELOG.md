@@ -2,6 +2,11 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Tooling — 2026-10-04: project-dashboard skill
+
+- New authored skill: **`project-dashboard`** (MIT) — build a visual dashboard of a project's real state as a single-file interactive HTML page in the reader's chat language: features by status, contract criteria with validation evidence, tests/CI, git position, debts and lessons. Every number is measured from the repository itself (ledger files, git, command outputs) with its source cited; stale or unverifiable data is labeled, never smoothed. Quality bar shared with `explainer`: deliberate design, screenshot inspected before delivery. Read-only on the repository; the artifact is disposable under `scratch/`.
+- Guard carve-out: `scratch/` (disposable chat-language artifacts, git-ignored) joins the English-only test `SKIP` set — committed content stays fully guarded.
+
 ## Tooling — 2026-10-04: explainer skill
 
 - New authored skill: **`explainer`** (MIT) — turn a dense result, system, error or architecture into the cheapest artifact the user can actually process, on an escalation ladder: controlled plain English (ASD-STE100, or "80% of the way") → diagram (Mermaid / ASCII / SVG, one question per diagram) → interactive single-file HTML page (self-contained: inline CSS and JS, no CDN, no build step, opens directly in a browser) → explainer video on explicit request only (storyboard approved by the user before any render, local render path first, an external API only on explicit user instruction with its key in an environment variable). Start at the lowest rung that answers the question; escalate one rung when the user re-asks, says they do not understand, or the prose would run past a screen. Artifacts are disposable (`scratch/` or the location the repository declares) and always delivered with a short chat summary — they accompany the answer, they do not replace it.

@@ -155,6 +155,7 @@ uv run --no-project python scripts/skills_agents.py audit [--strict]
 - **[2026-09-26] canon v1.1** — the tests hardcoded "v1.0" and section titles: the version bump would have made them silent (no-op replacements) or red. Fixtures derive the current version and only touch the markers.
 - **[2026-09-26] fleet rollout** — the v1.0 script reports a v2.0 repository as "unmanaged" and suggests `init --force` (which would overwrite §7): always merge and pull the kit before syncing the repositories (checklist in `docs/MIGRATION.md`).
 - **[2026-09-28] skills sprint** — ruff EXE001 fires only on POSIX (shebang present, no exec bit): the local Windows gate stays green while CI is red — it went unnoticed on `main` for two days. A script with a shebang must be committed 100755 (`git update-index --chmod=+x`); a Windows-only gate can never prove a filesystem-bit rule.
+- **[2026-10-04] explainer skill** — the agent harness writes its session plans into `.zcode/` in the chat language (French here): the repo-wide English-only guard went red on files that are not repository content. Harness state joins the test `SKIP` set and `.gitignore`; the guard still covers everything committed.
 
 ### References
 

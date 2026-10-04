@@ -122,7 +122,9 @@ class EnglishOnly(unittest.TestCase):
         0xAB, 0xBB,
     ))) + "]")
     FRENCH_NAMES = re.compile(r"(?<![a-z])commun(?![a-z])|outillage|mesure", re.IGNORECASE)
-    SKIP = frozenset({".git", "__pycache__", ".venv", "node_modules", ".ruff_cache"})
+    # ".zcode": agent-session state of the harness (plans written in the chat language,
+    # i.e. French here), git-ignored, never repository content.
+    SKIP = frozenset({".git", "__pycache__", ".venv", "node_modules", ".ruff_cache", ".zcode"})
 
     def files(self):
         for dirpath, dirnames, filenames in os.walk(ROOT):

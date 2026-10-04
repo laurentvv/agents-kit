@@ -10,6 +10,15 @@
       },
       "license": "MIT"
     },
+    "explainer": {
+      "source": "(authored)",
+      "ref": "2026-10-04",
+      "imported": "2026-10-04",
+      "files": {
+        "SKILL.md": "1817f43ef11f7f399a574532a4c359e92258b09fa18c7893e6cc9eb6e98b5d2b"
+      },
+      "license": "MIT"
+    },
     "using-superpowers": {
       "source": "obra/superpowers",
       "ref": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",

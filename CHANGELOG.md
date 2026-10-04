@@ -2,6 +2,10 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Tooling — 2026-10-04: explainer skill
+
+- New authored skill: **`explainer`** (MIT) — turn a dense result, system, error or architecture into the cheapest artifact the user can actually process, on an escalation ladder: controlled plain English (ASD-STE100, or "80% of the way") → diagram (Mermaid / ASCII / SVG, one question per diagram) → interactive single-file HTML page (self-contained: inline CSS and JS, no CDN, no build step, opens directly in a browser) → explainer video on explicit request only (storyboard approved by the user before any render, local render path first, an external API only on explicit user instruction with its key in an environment variable). Start at the lowest rung that answers the question; escalate one rung when the user re-asks, says they do not understand, or the prose would run past a screen. Artifacts are disposable (`scratch/` or the location the repository declares) and always delivered with a short chat summary — they accompany the answer, they do not replace it.
+
 ## Common block v2.2 — 2026-10-02
 
 - §6 **Read the upstream docs BEFORE acting**: before testing, debugging, upgrading or adopting any engine, model or third-party tool, fetch its official documentation into a scratch area and read the relevant pages — the upstream repo's `docs/` (per-model/per-feature pages the root README omits), model/dataset cards, `/llms.txt` endpoints (append `.md` to page URLs where supported). Never rely on memorized flags or assumed capabilities. Pin the doc version/commit at fetch time and cite it in the test verdict or decision.

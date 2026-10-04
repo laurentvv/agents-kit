@@ -18,3 +18,4 @@
 ## [2026-10-04] init | project-dashboard skill (fleet-wide visual status page from ledger + git + checks); scratch/ added to English-guard SKIP + .gitignore (chat-language artifacts, never committed).
 ## [2026-10-04] done | project-dashboard registered (MIT) + dogfood synced; 95 tests green, ruff green, both checks green; fleet deploy follows.
 ## [2026-10-04] sync | Kit main pushed to origin (df622c3 + log): explainer v2/v3 + project-dashboard + guard carve-outs public; fleet repos keep their local deploy commits (push on request).
+## [2026-10-04] done | Fleet push on request: 26 pushed (23 main/master + 3 existing feature branches); 6 held diverged (remotes moved elsewhere); 4 held no remote repo on GitHub (creation needs user decision); novel2video-ia WIP untouched.

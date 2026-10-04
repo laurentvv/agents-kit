@@ -11,3 +11,4 @@
 ## [2026-10-04] init | explainer skill (kit-authored): escalation ladder controlled English > diagram > single-file HTML > gated video; register + dogfood sync.
 ## [2026-10-04] done | explainer registered (MIT) + dogfood synced; 95 tests green, ruff green, both checks green; .zcode/ added to English-guard SKIP + .gitignore (harness plans are French).
 ## [2026-10-04] err | lazy-skills experiment (lazy loading lib) removed on user decision: ZCode/Claude Code lazy-load skills natively; a standalone loader pays off only with a real custom-orchestrator consumer.
+## [2026-10-04] sync | explainer rollout: merged to main (f3ebd24) + branch deleted; deployed 38, committed 33 (2 not-git, 3 with .agents/ gitignored by local choice); 3 pre-existing hand-edited held.

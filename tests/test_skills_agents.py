@@ -288,6 +288,24 @@ class Author(Kit):
         self.assertEqual(self.lock(r)["skills"]["docs-x"]["source"], sa.AUTHORED_SOURCE)
         self.assertEqual(run("check", r)[0], 0)
 
+    def test_bytecode_caches_stay_out_of_fingerprints_and_plans(self):
+        # running the scripts of an installed copy creates __pycache__: a runtime
+        # artifact must never turn a clean install into a hand-edited one
+        folder = self.write_skill()
+        (folder / "scripts").mkdir()
+        write(folder / "scripts" / "tool.py", "print(1)\n")
+        (folder / "scripts" / "__pycache__").mkdir()
+        write(folder / "scripts" / "__pycache__" / "tool.cpython-313.pyc", "junk")
+        self.assertEqual(run("author", "docs-x")[0], 0)
+        entry = json.loads(self.registry.read_text(encoding="utf-8"))["skills"]["docs-x"]
+        self.assertEqual(sorted(entry["files"]), ["SKILL.md", "scripts/tool.py"])
+        r = self.repo("r")
+        self.assertEqual(run("sync", r)[0], 0)
+        cache = r / ".agents" / "skills" / "docs-x" / "scripts" / "__pycache__"
+        cache.mkdir(parents=True)
+        write(cache / "tool.cpython-313.pyc", "generated at runtime")
+        self.assertEqual(run("check", r)[0], 0)
+
     def test_list_shows_authored_origin(self):
         self.write_skill()
         self.assertEqual(run("author", "docs-x")[0], 0)

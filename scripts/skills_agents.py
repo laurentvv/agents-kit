@@ -120,11 +120,14 @@ def hash_bytes(data: bytes) -> str:
 
 
 def fingerprints_of(folder: Path) -> dict[str, str]:
-    """relative posix path -> sha256, for every file under folder."""
+    """relative posix path -> sha256, for every file under folder. Python bytecode
+    caches (__pycache__/ dirs, *.pyc) are runtime artifacts: running a deployed
+    script inside an installed copy must not turn it into a hand-edited install."""
     out: dict[str, str] = {}
     for p in sorted(folder.rglob("*")):
-        if p.is_file():
-            out[p.relative_to(folder).as_posix()] = hash_bytes(p.read_bytes())
+        if not p.is_file() or "__pycache__" in p.parts or p.suffix == ".pyc":
+            continue
+        out[p.relative_to(folder).as_posix()] = hash_bytes(p.read_bytes())
     return out
 
 

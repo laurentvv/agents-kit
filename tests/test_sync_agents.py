@@ -110,6 +110,21 @@ class KitInvariants(unittest.TestCase):
         self.assertEqual(modules - set(sys.stdlib_module_names) - {"__future__"}, set())
 
 
+def externally_sourced_skill_roots(registry: dict, skills_dir: Path) -> frozenset:
+    """skills/<name>/ roots whose files are external content, not kit prose:
+    upstream-vendored skills (registry source) and kit-authored forks carrying a
+    NOTICE.md provenance marker (upstream text plus documented local adaptations,
+    distributed byte-identical). Plain authored skills stay guarded."""
+    roots = set()
+    for name, entry in registry.get("skills", {}).items():
+        if not isinstance(entry, dict):
+            continue
+        folder = skills_dir / str(name)
+        if entry.get("source") != "(authored)" or (folder / "NOTICE.md").is_file():
+            roots.add(folder)
+    return frozenset(roots)
+
+
 class EnglishOnly(unittest.TestCase):
     """The repository is English-only: no French letters, quotes or file names come back."""
 
@@ -126,13 +141,18 @@ class EnglishOnly(unittest.TestCase):
     # i.e. French here), git-ignored, never repository content.
     # "scratch": disposable chat-language artifacts (explainer/project-dashboard skills),
     # git-ignored, never committed - the guard keeps covering everything committed.
-    SKIP = frozenset({".git", "__pycache__", ".venv", "node_modules", ".ruff_cache", ".zcode", "scratch"})
+    # ".agents": the kit's own installed skill copies (.agents/skills/<name>/) are
+    # fingerprint-frozen distribution artifacts of skills/<name>/, not an authoring
+    # surface - external content lands there byte-identical (accented upstream text included).
+    SKIP = frozenset({".git", "__pycache__", ".venv", "node_modules", ".ruff_cache", ".zcode",
+                      "scratch", ".agents"})
 
-    def vendored_skill_roots(self) -> frozenset:
-        """skills/<name>/ installed from an upstream repo (skills.json source) is external
+    def externally_sourced_roots(self) -> frozenset:
+        """skills/<name>/ installed from an upstream repo (skills.json source), or authored
+        in the kit as a maintained fork carrying a NOTICE.md provenance file, is external
         content distributed byte-identical: fingerprints forbid local edits, so upstream
-        spelling (e.g. accented English loanwords like "cliche") is exempt. Kit-authored
-        skills stay guarded."""
+        spelling and multilingual data (e.g. accented loanwords, caption word lists) are
+        exempt. Plain kit-authored skills stay guarded."""
         registry = ROOT / "skills.json"
         if not registry.exists():
             return frozenset()
@@ -140,17 +160,15 @@ class EnglishOnly(unittest.TestCase):
             data = json.loads(registry.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             return frozenset()
-        names = [n for n, s in data.get("skills", {}).items()
-                 if isinstance(s, dict) and s.get("source") != "(authored)"]
-        return frozenset(ROOT / "skills" / n for n in names)
+        return externally_sourced_skill_roots(data, ROOT / "skills")
 
     def files(self):
-        vendored = self.vendored_skill_roots()
+        external = self.externally_sourced_roots()
         for dirpath, dirnames, filenames in os.walk(ROOT):
             dirnames[:] = [d for d in dirnames if d not in self.SKIP]
             for name in filenames:
                 path = Path(dirpath) / name
-                if any(path.is_relative_to(root) for root in vendored):
+                if any(path.is_relative_to(root) for root in external):
                     continue
                 yield path
 
@@ -189,6 +207,37 @@ class EnglishOnly(unittest.TestCase):
     def test_no_french_file_names(self):
         names = [str(p.relative_to(ROOT)) for p in self.files() if self.FRENCH_NAMES.search(p.name)]
         self.assertEqual(names, [])
+
+
+class ExternallySourcedSkillRoots(unittest.TestCase):
+    """The fork carve-out: an authored skill carrying a NOTICE.md provenance marker is
+    external content distributed byte-identical (exempt from the language scan, like
+    upstream-vendored skills); a plain authored skill stays guarded."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.skills = self.tmp / "skills"
+        self.skills.mkdir()
+
+    def test_upstream_authored_fork_and_plain(self):
+        for name in ("upstream", "fork", "plain"):
+            (self.skills / name).mkdir()
+        write(self.skills / "fork" / "NOTICE.md", "# NOTICE - provenance\n")
+        registry = {"skills": {
+            "upstream": {"source": "owner/repo", "ref": "x", "files": {}},
+            "fork": {"source": "(authored)", "ref": "x", "files": {}},
+            "plain": {"source": "(authored)", "ref": "x", "files": {}},
+        }}
+        roots = externally_sourced_skill_roots(registry, self.skills)
+        self.assertEqual(roots, {self.skills / "upstream", self.skills / "fork"})
+
+    def test_empty_or_malformed_registry(self):
+        self.assertEqual(externally_sourced_skill_roots({"skills": {}}, self.skills), frozenset())
+        self.assertEqual(externally_sourced_skill_roots({}, self.skills), frozenset())
+        self.assertEqual(
+            externally_sourced_skill_roots({"skills": {"bad": "not-a-dict"}}, self.skills),
+            frozenset())
 
 
 # ---------------------------------------------------------------- isolated kit

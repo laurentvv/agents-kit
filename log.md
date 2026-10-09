@@ -27,3 +27,4 @@
 ## [2026-10-09] done | skill-creator (18 files) + frontend-design vendored, pinned 763beda0, Apache-2.0; guard exempts upstream-sourced skills only; 95 tests, ruff, both checks green.
 ## [2026-10-09] sync | Rollout complete: PR #5 merged (3015b65, CI green); fleet deploy 32 applied, 27 committed (3 .agents gitignored, 2 not-git: Laya, Tomato-harvest-project); 5 hand-edited held (pre-existing).
 ## [2026-10-09] done | Fleet push on request: 18 pushed (deploy-only commits); 3 held with pre-existing unpushed work (blender-ia, diagram, ella-swap); 2 no GitHub repo (MoneyPrinterV2, pandas-ai); 4 diverged held (amd-ai-image-generator, haproxy-dataset-generator, Trading-AI, arxiv-editorial-agent).
+## [2026-10-09] init | ffmpeg-skill fleet rollout: vendor the generator-assets fork, generalize the adaptation block, author-register, deploy to 3 repos, fleet smoke.

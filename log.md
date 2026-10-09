@@ -23,3 +23,5 @@
 ## [2026-10-04] done | agy skill registered (MIT) + dogfood synced after 6 live trials on 1.2.16 (recipe, salvage, --continue); 95 tests, ruff, all checks green.
 ## [2026-10-04] sync | agy rollout: PR #4 squash-merged (cb4d45c, CI green), branch deleted; fleet deploy 38 applied, 33 committed (3 .agents gitignored, 2 not-git); 3 hand-edited held (pre-existing).
 ## [2026-10-04] init | ella-swap instantiated (v2.2 block + contract.md skeleton, ledger kept); 5 common skills deployed, check green. No commit (fresh repo, session owns the WIP).
+## [2026-10-09] init | Vendor skill-creator + frontend-design from anthropics/claude-plugins-official (pinned 763beda0): section 5 review done, Apache-2.0; English guard carve-out for upstream-sourced skills.
+## [2026-10-09] done | skill-creator (18 files) + frontend-design vendored, pinned 763beda0, Apache-2.0; guard exempts upstream-sourced skills only; 95 tests, ruff, both checks green.

@@ -128,11 +128,31 @@ class EnglishOnly(unittest.TestCase):
     # git-ignored, never committed - the guard keeps covering everything committed.
     SKIP = frozenset({".git", "__pycache__", ".venv", "node_modules", ".ruff_cache", ".zcode", "scratch"})
 
+    def vendored_skill_roots(self) -> frozenset:
+        """skills/<name>/ installed from an upstream repo (skills.json source) is external
+        content distributed byte-identical: fingerprints forbid local edits, so upstream
+        spelling (e.g. accented English loanwords like "cliche") is exempt. Kit-authored
+        skills stay guarded."""
+        registry = ROOT / "skills.json"
+        if not registry.exists():
+            return frozenset()
+        try:
+            data = json.loads(registry.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return frozenset()
+        names = [n for n, s in data.get("skills", {}).items()
+                 if isinstance(s, dict) and s.get("source") != "(authored)"]
+        return frozenset(ROOT / "skills" / n for n in names)
+
     def files(self):
+        vendored = self.vendored_skill_roots()
         for dirpath, dirnames, filenames in os.walk(ROOT):
             dirnames[:] = [d for d in dirnames if d not in self.SKIP]
             for name in filenames:
-                yield Path(dirpath) / name
+                path = Path(dirpath) / name
+                if any(path.is_relative_to(root) for root in vendored):
+                    continue
+                yield path
 
     def test_no_french_characters(self):
         offenders = []

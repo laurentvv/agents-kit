@@ -157,6 +157,7 @@ uv run --no-project python scripts/skills_agents.py audit [--strict]
 - **[2026-09-28] skills sprint** — ruff EXE001 fires only on POSIX (shebang present, no exec bit): the local Windows gate stays green while CI is red — it went unnoticed on `main` for two days. A script with a shebang must be committed 100755 (`git update-index --chmod=+x`); a Windows-only gate can never prove a filesystem-bit rule.
 - **[2026-10-04] explainer skill** — the agent harness writes its session plans into `.zcode/` in the chat language (French here): the repo-wide English-only guard went red on files that are not repository content. Harness state joins the test `SKIP` set and `.gitignore`; the guard still covers everything committed.
 - **[2026-10-04] project-dashboard skill** — explainer artifacts are chat-language deliverables written under `scratch/` (French by §1): the English-only guard went red on disposable files. `scratch/` joins `SKIP` and `.gitignore`; committed content stays guarded.
+- **[2026-10-09] official-plugins vendoring** — the upstream `frontend-design` SKILL.md uses an accented English loanword ("cliche" with e-acute): vendored skills must stay byte-identical (fingerprints refuse local edits), so the English-only guard exempts `skills/<name>/` only when `skills.json` records an upstream source; authored skills stay guarded.
 
 ### References
 

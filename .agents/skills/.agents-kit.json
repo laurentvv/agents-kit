@@ -204,6 +204,14 @@
         "SKILL.md": "73962447464433476343e2c12cd08ab39cc99a9e5f3c118c5fb54ed897574ef6"
       }
     },
+    "minimal-change-engineer": {
+      "source": "(authored)",
+      "ref": "2026-10-11",
+      "files": {
+        "NOTICE.md": "93c498ca64f29c5325190bb9d828a6a79adb13675b8b8a36143ed1b4f0b5d62e",
+        "SKILL.md": "dd8062f2d09fb83aea542f95136d70bbf4f46324e76769bf83d363f070b3353c"
+      }
+    },
     "mobile-native": {
       "source": "emilkowalski/skills",
       "ref": "2d228630ba1446365f614a108cb8252f1feda202",
@@ -242,12 +250,28 @@
         "SKILL.md": "bba39c955eb1871c5a02733976ceec5d0324198e0812e667604756489c89f7b9"
       }
     },
+    "reality-checker": {
+      "source": "(authored)",
+      "ref": "2026-10-11",
+      "files": {
+        "NOTICE.md": "fd8fe8e6da21549ebc561f5b5c7b5bbffe79dbcc1decf0073c7af097d904262d",
+        "SKILL.md": "0b45f299089997863b62428ce7456f69b77da72c83946fddb98932901bafa92f"
+      }
+    },
     "review-animations": {
       "source": "emilkowalski/skills",
       "ref": "2d228630ba1446365f614a108cb8252f1feda202",
       "files": {
         "SKILL.md": "6ff590d29e436766135aa3d137be1fac2a867165c7257fc315b189361f1873af",
         "STANDARDS.md": "e7d3605034acda54ca13e43aec9e64d65b53de20f75b11b8d694e373012fbe07"
+      }
+    },
+    "rust-refactoring": {
+      "source": "(authored)",
+      "ref": "2026-10-11",
+      "files": {
+        "NOTICE.md": "e857ce4b50af4e1d20c35424f3c3e307bfa39550013685ab871d5bc699ef18f9",
+        "SKILL.md": "8793ba41e7e47f529ffaf5192567e7bc93839a4446c46da43c60400119241521"
       }
     },
     "skill-creator": {
@@ -286,6 +310,14 @@
         "references/hermes-tools.md": "e2185c976a3c87503910e05e2aea58cc89bc8e569bb624b93df9958ac47a9190",
         "references/muse-tools.md": "5a1da5c575fe18456ca71cd47ebfd8a38c745f8d82a67fe64d5b83080000eeb3",
         "references/pi-tools.md": "703dbc83d23ecab9c6f388460c38abc482e9dee2fe6772a8c7a255152ad3a4d5"
+      }
+    },
+    "voice-ai-engineering": {
+      "source": "(authored)",
+      "ref": "2026-10-11",
+      "files": {
+        "NOTICE.md": "1bbac6cca2eefe5f312e0f8db55a97d3731d15339c88239e18185787cd5e128f",
+        "SKILL.md": "e173ea8e7d98491d4549046b0f78448382d54679fc1362f70ec2d4f6ad15d675"
       }
     },
     "write-swift": {

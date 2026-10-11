@@ -140,6 +140,17 @@
       },
       "license": "MIT"
     },
+    "moli-webfetch": {
+      "source": "lexmount/moli",
+      "ref": "53111bf02f2d17a4fa52dc2ee6bebc863fe2f994",
+      "imported": "2026-10-11",
+      "files": {
+        "SKILL.md": "2bad2f4f24eb6396c4f0872756c605eb93fbe821aa9f53802b817e9e3a1fbc89",
+        "agents/openai.yaml": "d331d49b7637f0a5bc2ae60dd323aa9535196739a2dd3ebd9b48b556ee9ea562",
+        "references/fetch-recipes.md": "1b40d43ea209c7e36cfce9606fd7277910472bfddff44ef206edfd151f63d632"
+      },
+      "license": "Apache-2.0"
+    },
     "project-dashboard": {
       "source": "(authored)",
       "ref": "2026-10-04",

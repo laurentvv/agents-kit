@@ -39,3 +39,5 @@
 ## [2026-10-11] sync | good-css rollout GO received: push branch, open PR, merge on Kilo green, delete branch, back on main, deploy both roots (C:\GIT + D:\GIT).
 ## [2026-10-11] sync | good-css rollout: PR #7 squash-merged (7817a98, CI + Kilo pass 6m40s), branch deleted; deploy 36 C:\GIT + 3 D:\GIT (money, moneyv2, ocr-to-validation), no fleet push.
 ## [2026-10-11] done | Rollout closed: good-css up_to_date on sampled repos both roots; audit holds pre-existing (25 behind partial installs, 5 hand-edited known); docs commit on main, push on request.
+## [2026-10-11] init | Canon v2.3 (branch feat/canon-v2-3-tgrep): §1 Code-search directive for large repos; tgrep verified live (microsoft/tgrep v0.1.6, index in .tgrep/, 0.5 ms query, serve --exclude) + README pinned 669e832b.
+## [2026-10-11] done | Canon v2.3 registered (7 994 B < 8 KB): §1 Code-search directive (tgrep >5k files or .tgrep/, git grep <2k); kit + template resynced, template §7 example, CHANGELOG; 98 tests (unittest and pytest), ruff, both checks green; audit 33 behind pre-sync expected. Push/merge await GO.

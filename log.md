@@ -39,3 +39,5 @@
 ## [2026-10-11] sync | good-css rollout GO received: push branch, open PR, merge on Kilo green, delete branch, back on main, deploy both roots (C:\GIT + D:\GIT).
 ## [2026-10-11] sync | good-css rollout: PR #7 squash-merged (7817a98, CI + Kilo pass 6m40s), branch deleted; deploy 36 C:\GIT + 3 D:\GIT (money, moneyv2, ocr-to-validation), no fleet push.
 ## [2026-10-11] done | Rollout closed: good-css up_to_date on sampled repos both roots; audit holds pre-existing (25 behind partial installs, 5 hand-edited known); docs commit on main, push on request.
+## [2026-10-11] init | Vendor moli-webfetch from lexmount/moli (branch feat/vendor-moli-webfetch): §5 review done (3 files clean, dual MIT OR Apache-2.0), pin 53111bf0; side task: moli binary normalized to the user-local bin on PATH (v1.1.16 verified).
+## [2026-10-11] done | moli-webfetch vendored (3 files, pinned 53111bf0; registry license Apache-2.0 from the dual MIT OR Apache-2.0 repo) + dogfood install; 98 tests, ruff, both checks green. Push/merge/deploy await GO.

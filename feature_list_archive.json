@@ -1,6 +1,34 @@
 {
   "features": [
     {
+      "id": "AA-F-01",
+      "name": "reality-checker skill",
+      "description": "Authored from agency-agents testing/testing-reality-checker.md (MIT, pinned f99f6aa): evidence-based sprint-closure certification mapped to contract.md/progress.md; registered 2026-10-11, deployed to moneyv2, novel2video-ai, ocr-to-validation, haproxy-llm.",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
+      "id": "AA-F-02",
+      "name": "minimal-change-engineer skill",
+      "description": "Authored from agency-agents engineering/engineering-minimal-change-engineer.md: minimum-viable diffs, scope-creep refusal, scope self-check template; registered 2026-10-11, deployed with AA-F-01.",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
+      "id": "AA-F-03",
+      "name": "rust-refactoring skill",
+      "description": "Authored from agency-agents engineering/engineering-rust-refactoring-specialist.md: coherent repository-scale refactors, panic hardening, verification matrix (moneyv2 target); registered 2026-10-11.",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
+      "id": "AA-F-04",
+      "name": "voice-ai-engineering skill",
+      "description": "Authored from agency-agents engineering/engineering-voice-ai-integration-engineer.md: speech pipeline validate/preprocess/transcribe/diarize/structure/hand-off (novel2video-ai target); registered 2026-10-11.",
+      "status": "completed",
+      "dependencies": []
+    },
+    {
       "id": "F-01",
       "name": "Robust reading",
       "description": "Non-UTF-8 encoding / BOM / missing folder: clear message, never a traceback, the audit goes on.",

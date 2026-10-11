@@ -2,6 +2,13 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Common block v2.3 — 2026-10-11
+
+- §1 **Code search**: on large repositories (> 5k files, or a `.tgrep/` index folder present), agents must prefer the fast indexed `tgrep` CLI over slow recursive scans (`grep -r`, `find`, `Select-String`) — the pain point of big-asset projects (e.g. game repositories): `tgrep -- "pattern" .`, `tgrep -t <type> -- "pattern" .` for one file type (first use: `tgrep index .`; keep `.tgrep/` git-ignored). Below ~2k files, plain `git grep` and the standard tools are already instant. The block names the tool and the usage only; it stays free of machine paths (genericity invariant) — the binary (microsoft/tgrep, Rust, MIT) is installed on the fleet machines in `~/.local/bin`, already on PATH.
+- Adopted on measured evidence, per §6: binary `tgrep 0.1.6` verified live (`--help` surface, index built in `.tgrep/`, query answered in 0.5 ms on an indexed corpus, `count-files` walker); upstream README pinned at fetch time (commit `669e832b`): client/server design — `tgrep serve . [--exclude <dir>]…` auto-builds the index in the background and clients connect automatically.
+- Template §7 "Key commands" gains the big-project example: `tgrep serve . --exclude .godot`.
+- Block size: 7 648 → 7 994 bytes (budget < 8 KB). **Migration**: v2.2 repositories are "behind" → `sync <repo>` (fleet sync after this kit release is merged); §7 untouched.
+
 ## Tooling — 2026-10-04: agy skill
 
 - New authored skill: **`agy`** (MIT) — drive Google Antigravity's `agy` CLI headless, image generation first: the verified recipe (disposable cwd + `--dangerously-skip-permissions`), the three-point success check (status + `denied_actions`, magic bytes on disk, image actually looked at — a soft-denied run still exits 0 with status SUCCESS), salvage of generated images from `~/.gemini/antigravity-cli/brain/<conversation_id>/` after a denied copy, reference-based iteration via `--continue` / `--conversation`, and machine-readable output handling (text / json / stream-json, parsed with Python — `jq` not assumed). Every rule measured live on agy 1.2.16 (2026-10-04), including the doc-vs-binary drift (`--print-timeout` default, `--effort xhigh|max`, undocumented `denied_actions`) and the workspace-context leak (the enclosing repo's AGENTS.md and `.agents/skills/` shape the run). Official reference pinned at fetch time: https://antigravity.google/docs/cli/headless/

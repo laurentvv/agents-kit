@@ -37,3 +37,5 @@
 ## [2026-10-11] init | Vendor good-css from vojtaholik/good-css (branch feat/vendor-good-css): §5 review done (MIT, SKILL.md + 8 refs clean), pin + add + dogfood sync + gate.
 ## [2026-10-11] done | good-css vendored (9 files, pinned 92d436ba1937, MIT) + dogfood install; 98 tests, ruff, both checks green; deploy dry-run 39 repos (36 C:\GIT + 3 D:\GIT); push/merge await GO.
 ## [2026-10-11] sync | good-css rollout GO received: push branch, open PR, merge on Kilo green, delete branch, back on main, deploy both roots (C:\GIT + D:\GIT).
+## [2026-10-11] sync | good-css rollout: PR #7 squash-merged (7817a98, CI + Kilo pass 6m40s), branch deleted; deploy 36 C:\GIT + 3 D:\GIT (money, moneyv2, ocr-to-validation), no fleet push.
+## [2026-10-11] done | Rollout closed: good-css up_to_date on sampled repos both roots; audit holds pre-existing (25 behind partial installs, 5 hand-edited known); docs commit on main, push on request.

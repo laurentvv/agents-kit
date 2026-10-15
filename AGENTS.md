@@ -80,7 +80,7 @@ Canonical repository of the **common AGENTS.md base**: the delimited block in `a
 
 ### Declared locations (deviations from the common block)
 
-- Ledger: legacy 4-file ledger at the root (since 2026-09-26; the "duckdb state ledger" sprint still runs on it) — flips to `.agent/state.duckdb` (agent-state skill) at the GO-gated migration; `ledger .` checks the legacy files until then. Closed contracts and `progress.md` files are archived in `docs/journal/`. Between sprints, `feature_list.json` stays empty.
+- Ledger: `.agent/state.duckdb` via the agent-state skill — migrated from the legacy 4-file ledger on 2026-10-16 (113 log entries, sources kept in `.agent/legacy_markdown_backup/`); `ledger .` reports the database. History before 2026-10-16 (closed-sprint contracts, progress, rotated logs) lives in that backup. Between sprints, the active features list is empty.
 - Statuses / log types: standard, no extension.
 - Shell: Git Bash. Kit file encoding: **UTF-8 without BOM, LF line endings** (the script writes `newline="\n"`).
 - Language: standard §1 rule (repository content in English, chat replies to the user in French); `tests/` fails on any French character, French word or French file name in the repository.

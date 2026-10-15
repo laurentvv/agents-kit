@@ -19,10 +19,12 @@ Commands
                              canon (--force to override); --dry-run: diff without writing.
   init  <repo> [--name N]   Create AGENTS.md from the template (common block always fresh).
                              --force: overwrite an existing file.
-                             --ledger: also create the missing state files.
+                             --ledger: also prepare the .agent/ folder (the agent-state
+                             bootstrap creates state.duckdb on first run).
   adopt <repo>              Insert the common block into an existing unmanaged AGENTS.md without
                              losing anything: the previous content moves to §7 (--dry-run available).
-  ledger <repo>             Check (read-only) the 4 state files against §2 of the common block.
+  ledger <repo>             Check (read-only) the state: reports the .agent/state.duckdb database
+                             (agent-state skill) or checks the legacy 4-file ledger against §2.
   version                   Canon version + fingerprint; --register: publish a new version.
 
 Option --file <path> (check/sync/adopt): target another file than AGENTS.md
@@ -400,35 +402,11 @@ def cmd_init(repo: Path, name: str | None, force: bool, ledger: bool) -> int:
 
 
 def create_ledger(repo: Path) -> None:
-    if not (repo / "feature_list.json").exists():
-        write_text(repo / "feature_list.json", '{\n  "features": []\n}\n')
-        print("Created: feature_list.json")
-    if not (repo / "progress.md").exists():
-        write_text(
-            repo / "progress.md",
-            "# Sprint Progress\n\n"
-            "## Current Goal\n- [ ] ...\n\n"
-            "## Iteration Milestones\n- [ ] ...\n\n"
-            "## Contract Validation\n- Criterion 1: evidence (command run, exit code, screenshot) ...\n",
-        )
-        print("Created: progress.md")
-    if not (repo / "contract.md").exists():
-        write_text(
-            repo / "contract.md",
-            "# Validation Contract\n\n"
-            "## Automated Acceptance Criteria\n- [ ] Criterion 1: ...\n\n"
-            "## Evaluation Protocol\n"
-            "* Test command: `pytest` / `npm test`\n"
-            "* Expected behavior: zero warnings, zero failures.\n",
-        )
-        print("Created: contract.md")
-    if not (repo / "log.md").exists():
-        write_text(
-            repo / "log.md",
-            "# Execution Log (Append-Only)\n\n"
-            f"## [{local_today().isoformat()}] init | agents-kit instantiation (AGENTS.md template).\n",
-        )
-        print("Created: log.md")
+    # Since canon v3.0 the ledger is the DuckDB database managed by the agent-state
+    # skill: the first bootstrap creates it (and migrates any legacy 4-file ledger).
+    (repo / ".agent").mkdir(parents=True, exist_ok=True)
+    print("Created: .agent/ - initialize the database with the agent-state bootstrap:")
+    print("  uv run --no-project .agents/skills/agent-state/scripts/state_agents.py bootstrap")
 
 
 def insert_block(text: str, canon: str) -> str:
@@ -680,6 +658,10 @@ def cmd_ledger(
     if not repo.is_dir():
         print(f"FOLDER NOT FOUND: {repo}")
         return 2
+    if (repo / ".agent" / "state.duckdb").is_file():
+        print(f"Ledger: {(repo / '.agent' / 'state.duckdb').as_posix()}"
+              " (DuckDB database, agent-state skill - legacy checks skipped)")
+        return 0
     candidates = [repo / folder] if folder else [repo / loc for loc in LEDGER_LOCATIONS]
     base = next((c for c in candidates if any((c / f).is_file() for f in LEDGER_FILES)), None)
     if base is None:

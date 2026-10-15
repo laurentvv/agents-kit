@@ -3,7 +3,7 @@
 > Instructions for any AI coding agent working in this repository.
 > Structure: **common block** (delimited, resyncable) + **project-specific part** (free).
 
-<!-- BEGIN:agents-common v2.3 — block shared across repositories (agents-kit). Do not edit by hand: resync with scripts/sync_agents.py -->
+<!-- BEGIN:agents-common v3.0 — block shared across repositories (agents-kit). Do not edit by hand: resync with scripts/sync_agents.py -->
 <!-- The script only replaces what lies between the BEGIN/END markers; all repository-specific content is preserved -->
 
 > **Priority on conflict**: explicit user instruction > this repo's §7 > this common block. The §5 prohibitions are lifted only on a formal explicit request. This block is overwritten on every sync: add nothing here (lessons → §7, see §6).
@@ -20,44 +20,27 @@
 
 ## §2 On-disk state = source of truth
 
-Never rely on the context window alone: it degrades, gets compressed, gets erased. Work state lives in **four files** (default: repo root; allowed variants if declared in §7: `.agents/`, `memory-bank/`). On every start, crash or restart: read them to rebuild your state deterministically. **Proportionality**: the ledger is for feature suites — a question or a one-off fix does not open a sprint (one log entry is enough if the ledger exists).
+Never rely on the context window alone: it degrades, gets compressed, gets erased. Work state lives in **one DuckDB database**, `.agent/state.duckdb`, managed only through the `agent-state` skill CLI (shipped by the kit; another path is declared in §7):
 
-| File | Role | Lifecycle |
-|---|---|---|
-| `feature_list.json` | **Active** features (pending / in_progress) only. | Updated on every status change; `completed` ones move to `feature_list_archive.json` (keep it short — read every session). |
-| `contract.md` | Validation contract: strict, testable assertions (15-30 criteria). | **Frozen** before the first line of code; no longer editable by the generator (scope change = new contract approved by the user). At closure: archived as `docs/journal/contract_YYYY-MM-DD.md`. |
-| `progress.md` | Current sprint dashboard: goal, milestones, **validation evidence for each criterion**. | Updated at the end of each iteration; archived with the contract. |
-| `log.md` | **Append-only** chronological log. | One entry at the start and at the end of each action. |
-
-**Formats**:
-
-`feature_list.json` — `"status"` ∈ `pending | in_progress | completed` (+ allowed project extensions, e.g. `awaiting_playtest` — declare them in §7):
-
-```json
-{ "features": [ { "id": "F-01", "name": "…", "description": "technical scope",
-  "status": "pending | in_progress | completed", "dependencies": [] } ] }
+```bash
+uv run --no-project .agents/skills/agent-state/scripts/state_agents.py [--repo PATH] <command>
 ```
 
-`log.md` — **budget ~200 characters per entry** (details go in the commit):
+The dependency (`duckdb>=1.1.0`) is declared inside the script (PEP 723): uv builds and caches an isolated environment — no global install. Tables: `features` (pending | in_progress | completed), `contract_criteria` + `contract_meta` (frozen validation contract, 15-30 criteria, test command), `sprint_progress` (objective + milestones), `execution_log` (append-only event log; no rotation, no archive). **Proportionality**: the ledger is for feature suites — a question or a one-off fix does not open a sprint (one log entry is enough if the ledger exists). The database is committed to git (source of truth); only `*.duckdb.wal` is ignored. A legacy 4-file ledger (`feature_list*.json`, `contract.md`, `progress.md`, `log.md`) is auto-migrated with backup on the first `bootstrap`.
 
-```markdown
-## [YYYY-MM-DD] init | Workspace initialization and contract.md negotiation.
-## [YYYY-MM-DD] gen  | Wrote the main script and generated the JSON structures.
-## [YYYY-MM-DD] eval | Contract validation failed on criterion 2.
-```
-
-`type` ∈ `init | gen | eval | fix | sync | done | err` (+ project extensions).
-
-**Log rotation** (context budget): `log.md` holds only the current month. On month change (or beyond ~150 KB), move the history to `docs/journal/log_YYYY-MM[_DD-DD].md` — nothing is erased, the archive stays greppable. **At bootstrap: read only `log.md` (short); archives only via targeted `grep`.** *Variant B (declare in §7): event history in a database (DuckDB/SQLite) instead of the flat file — same discipline, no .md log.*
+1. **Bootstrap** — on every start, crash or restart, run `bootstrap`: bounded state (active features, sprint, contract, the last 20 log entries). Never query the full history unfiltered — use `search-log`.
+2. **Action** — `log <type> "<message>"` (type ∈ init | gen | eval | fix | sync | done | err, ~200 chars) at the start and at the end of each action.
+3. **Sync** — update `feature`, `step`, `contract` immediately after each write or test.
+4. **Errors** — on exception or interruption, run `bootstrap` again: the last committed transaction is the valid state.
 
 ## §3 Execution loop
 
-1. **Bootstrap** — check the 4 files; present → read them (budget: active items of `feature_list.json`, `progress.md`, `contract.md`, `log.md` in full); absent → create them when a feature suite starts. Do NOT read archives except via targeted `grep`.
-2. **Action** — before running a task, write its line in `log.md`.
+1. **Bootstrap** — `bootstrap` (§2); a feature suite starting on an empty ledger opens its sprint there (features, contract frozen BEFORE the first line of code).
+2. **Action** — log the task before running it (§2).
 3. **Gate** — a failing static check **forbids** syncing the ledger (compiler/linter green first — never claim "check OK" without running it). Verification tools pinned to a version, identical locally and in CI.
-4. **Sync** — after each write or test, update the associated status file.
-5. **Errors** — on exception or interruption, the valid state = last `log.md` entry + `progress.md` assertions.
-6. **Closure** — finished features archived, contract and `progress.md` archived, `done` entry; report to the user: done · verified (how) · not verified.
+4. **Sync** — after each write or test, update the ledger (§2).
+5. **Errors** — on exception or interruption, `bootstrap` again (§2).
+6. **Closure** — features marked completed, sprint `step reset`, `done` log entry; report to the user: done · verified (how) · not verified.
 
 ## §4 Git & delivery
 
@@ -93,11 +76,11 @@ Never rely on the context window alone: it degrades, gets compressed, gets erase
 
 ### Mission / scope
 
-Canonical repository of the **common AGENTS.md base**: the delimited block in `agents-common.md`, the instantiation template and the `scripts/sync_agents.py` script (audit / check / sync / adopt / init / ledger / version) that distributes it to neighbouring repositories. The kit also vendors and distributes **common agent skills** (`scripts/skills_agents.py`: add / author / list / check / sync / audit) into the repositories' `.agents/skills/` folders. Public GitHub project, MIT license. The kit contains **no machine path and no specific repository name** — the specific part lives in each consuming repository.
+Canonical repository of the **common AGENTS.md base**: the delimited block in `agents-common.md`, the instantiation template and the `scripts/sync_agents.py` script (audit / check / sync / adopt / init / ledger / version) that distributes it to neighbouring repositories. The kit also vendors and distributes **common agent skills** (`scripts/skills_agents.py`: add / author / list / check / sync / audit) into the repositories' `.agents/skills/` folders, and ships since canon v3.0 the **agent-state** skill (`scripts/state_agents.py`): the DuckDB ledger CLI every repository runs (`.agent/state.duckdb`). Public GitHub project, MIT license. The kit contains **no machine path and no specific repository name** — the specific part lives in each consuming repository.
 
 ### Declared locations (deviations from the common block)
 
-- Ledger: root — created on 2026-09-26 (sprints "tooling", "canon v1.1", then "English"); `ledger .` checks it. Closed contracts and `progress.md` files are archived in `docs/journal/`. Between sprints, `feature_list.json` stays empty.
+- Ledger: `.agent/state.duckdb` via the agent-state skill — migrated from the legacy 4-file ledger on 2026-10-16 (113 log entries, sources kept in `.agent/legacy_markdown_backup/`); `ledger .` reports the database. History before 2026-10-16 (closed-sprint contracts, progress, rotated logs) lives in that backup. Between sprints, the active features list is empty.
 - Statuses / log types: standard, no extension.
 - Shell: Git Bash. Kit file encoding: **UTF-8 without BOM, LF line endings** (the script writes `newline="\n"`).
 - Language: standard §1 rule (repository content in English, chat replies to the user in French); `tests/` fails on any French character, French word or French file name in the repository.
@@ -105,6 +88,8 @@ Canonical repository of the **common AGENTS.md base**: the delimited block in `a
 ### Key commands
 
 ```bash
+# state ledger CLI (agent-state skill; canonical copy scripts/state_agents.py, duckdb>=1.1.0 via PEP 723)
+uv run --no-project .agents/skills/agent-state/scripts/state_agents.py bootstrap
 # fleet state (default: parent folder of the kit)
 uv run --no-project python scripts/sync_agents.py audit
 # check / resync one repository
@@ -117,8 +102,8 @@ uv run --no-project python scripts/sync_agents.py init ../<new> --name "<Name>" 
 uv run --no-project python scripts/sync_agents.py adopt ../<repo> --dry-run
 # publish a new canon version (after bumping vX.Y in the marker)
 uv run --no-project python scripts/sync_agents.py version --register
-# pre-commit gate: tests + lint + kit invariants
-uv run --no-project python -m unittest discover -s tests
+# pre-commit gate: tests + lint + kit invariants (duckdb needed by the state tests)
+uv run --no-project --with "duckdb>=1.1.0" python -m unittest discover -s tests
 uvx ruff@0.16.9 check scripts tests   # pinned version, identical to CI
 uv run --no-project python scripts/sync_agents.py check . && uv run --no-project python scripts/sync_agents.py check . --file template/AGENTS.template.md
 # common skills: vendor once in the kit, then deploy to the repositories' .agents/skills/
@@ -140,7 +125,8 @@ uv run --no-project python scripts/skills_agents.py audit [--strict]
 - **Legacy markers**: v1.x blocks use the `agents-commun` marker name; the script keeps recognizing it so that `sync` migrates a repository to `agents-common`. Do not drop that compatibility while the fleet may still hold v1.x blocks.
 - **Block budget**: < 8 KB (loaded in every session of every repository) — any added rule must be generic and earn its place.
 - **Strict markers**: one `<!-- BEGIN:agents-common … -->` line, one `<!-- END:agents-common -->` line — the script only replaces between them. Do not nest other markers inside the block.
-- **Zero dependency** for the script and the tests (standard library only, Python 3.11+); no write outside the target files; `audit`, `check` and `ledger` never modify anything.
+- **Zero dependency** for `sync_agents.py`, `skills_agents.py` and their tests (standard library only, Python 3.11+); no write outside the target files; `audit`, `check` and `ledger` never modify anything. The state CLI (`scripts/state_agents.py`) adds exactly one dependency — `duckdb>=1.1.0`, declared in its PEP 723 header and AST-guarded by test; its tests run with `--with "duckdb>=1.1.0"` (plain `uv run` installs duckdb from the script header automatically).
+- **State script mirror**: `scripts/state_agents.py` and `skills/agent-state/scripts/state_agents.py` are byte-identical (test-enforced, same discipline as the kit/template block). Edit the canonical copy, mirror it, then `skills_agents.py author agent-state --force` and `sync .` before committing.
 - **No silent loss**: `sync` does not overwrite a hand-edited or newer block without `--force`; `adopt` keeps every original line. Every new write path gets its regression test.
 - **Canon-independent tests**: no block version or section title hardcoded in `tests/` — a version bump breaks no test.
 - **`main` is consumed live**: the repositories' CI runs `agents-md-check.yml` against the kit's `main` — never break the `check` command line or merge an unregistered canon there; release the kit before syncing the fleet.
@@ -161,7 +147,10 @@ uv run --no-project python scripts/skills_agents.py audit [--strict]
 - **[2026-10-09] official-plugins vendoring** — the upstream `frontend-design` SKILL.md uses an accented English loanword ("cliche" with e-acute): vendored skills must stay byte-identical (fingerprints refuse local edits), so the English-only guard exempts `skills/<name>/` only when `skills.json` records an upstream source; authored skills stay guarded.
 - **[2026-10-09] ffmpeg-skill fleet rollout** — the exemption covered `skills/<name>/` but not the dogfood install: `.agents/skills/frontend-design/SKILL.md` (accented loanword, committed in b2745b8) left main's English-only test red. Installed copies are fingerprint-frozen artifacts, not an authoring surface: `.agents` joined the guard SKIP.
 - **[2026-10-09] ffmpeg-skill fleet rollout** — running a deployed Python skill creates `__pycache__` inside the installed copy, and `fingerprints_of` counted those artifacts: the fleet smoke itself flipped ai-doc2video's fresh install to "hand-edited". Bytecode caches (`__pycache__/`, `*.pyc`) are excluded from fingerprints on both sides; fork skills (authored + `NOTICE.md` provenance) are exempt from the language scan as external content — their scripts stay byte-frozen.
+- **[2026-10-16] duckdb state sprint** — duckdb.org documentation pages are client-rendered JS shells (~600 bytes fetched, `.md` endpoints 404): an API fact is verified by EXECUTING a probe against the pinned package (duckdb 1.5.6 via the PEP 723 header), never by trusting the fetched doc text.
+- **[2026-10-16] duckdb state sprint** — a DuckDB statement one dedent outside its `with duckdb.connect(...)` block raises "Connection already closed": every statement of a command stays inside the with-block (caught by the smoke run before commit).
+- **[2026-10-16] duckdb state rehearsal** — the kit ledger reuses feature ids across sprints (active F-05..F-19 vs archived F-01..F-24): a single primary-key table cannot hold both rows, and "archive then INSERT OR REPLACE" silently dropped 15 archived features on the rehearsal copy. The migration re-keys colliding archived ids to `AA-<id>` with a printed warning; repositories with the same id habit stay lossless.
 
 ### References
 
-- Full audit: `docs/audit-2026-09-26.md` — migration plan: `docs/MIGRATION.md` — version history: `CHANGELOG.md` — token measurement: `docs/token-measurement-2026-09-26.md` — tests: `tests/` — CI: `.github/workflows/ci.yml` — repositories' guard: `.github/workflows/agents-md-check.yml` + `template/agents-md.yml` — skills: `scripts/skills_agents.py` + `skills.json` + `skills/`.
+- Full audit: `docs/audit-2026-09-26.md` — migration plan: `docs/MIGRATION.md` — version history: `CHANGELOG.md` — token measurement: `docs/token-measurement-2026-09-26.md` — tests: `tests/` — CI: `.github/workflows/ci.yml` — repositories' guard: `.github/workflows/agents-md-check.yml` + `template/agents-md.yml` — skills: `scripts/skills_agents.py` + `skills.json` + `skills/` — state CLI: `scripts/state_agents.py` + `skills/agent-state/`.

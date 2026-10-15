@@ -7,6 +7,20 @@ From the audit of 2026-09-26 (`docs/audit-2026-09-26.md`). Repository names and 
 3. `check <repo>` green, `ledger <repo>` if the repository has a ledger, then `audit` to confirm;
 4. one commit per repository (`chore: agents-kit v2.0 - common block + specific part`).
 
+## v3.0 — DuckDB ledger rollout (2026-10-16)
+
+Canon v3.0 replaces the 4-file ledger with `.agent/state.duckdb` (agent-state skill). **Order matters**: a repository must hold the skill BEFORE its block tells the agent to use the CLI, and the kit `main` must be released BEFORE the fleet sync (a v2.3 repository reports "behind" against a v3.0 kit main until synced — its weekly CI stays red in between, so release and roll out in the same window).
+
+Per repository, in this order:
+
+1. `uv run --no-project python scripts/skills_agents.py sync ../<repo>` — installs the `agent-state` skill (and refreshes the others);
+2. `uv run --no-project python scripts/sync_agents.py sync ../<repo>` — canon v3.0 (AFTER the skill, never before);
+3. if a legacy ledger exists (`feature_list*.json`, `contract.md`, `progress.md`, `log.md`, `docs/journal/`): `uv run --no-project scripts/state_agents.py --repo ../<repo> migrate --backup` — one transaction, sources archived into `.agent/legacy_markdown_backup/`, `.agent/*.duckdb.wal` pinned in the repository's `.gitignore`; the first `bootstrap` does it automatically otherwise;
+4. check the migrated counts against the source files (`bootstrap` output), commit `.agent/state.duckdb` + the removed legacy files in one commit per repository (`chore: agents-kit v3.0 - DuckDB ledger migration`);
+5. repositories with extended statuses (e.g. `awaiting_playtest`) or extended log types: they are coerced to `pending` / skipped with a count at migration — reconcile right after, in the database.
+
+Never `--force` anything during the rollout; a repository that refuses (hand-edited block, dirty tree, CI guard red) is held and listed with its reason. The kit's own ledger flips in the same window (`migrate --backup --repo .`).
+
 ## Repositories already on v1.x
 
 Repositories synced with v1.0 or v1.1 carry the French block and the `agents-commun` markers. `audit` reports them as "behind"; `sync <repo>` replaces the block with v2.0 (English, `agents-common` markers) and keeps §7 byte-identical. Their §7 stays in its own language until it is translated: from v2.1 the block itself asks agents to write the repository in English and to reply to the user in French.

@@ -144,8 +144,10 @@ class EnglishOnly(unittest.TestCase):
     # ".agents": the kit's own installed skill copies (.agents/skills/<name>/) are
     # fingerprint-frozen distribution artifacts of skills/<name>/, not an authoring
     # surface - external content lands there byte-identical (accented upstream text included).
+    # ".agent": the DuckDB ledger (binary state.duckdb) and the migrated legacy backups -
+    # machine state and fleet-generated history, not authored repository content.
     SKIP = frozenset({".git", "__pycache__", ".venv", "node_modules", ".ruff_cache", ".zcode",
-                      "scratch", ".agents"})
+                      "scratch", ".agents", ".agent"})
 
     def externally_sourced_roots(self) -> frozenset:
         """skills/<name>/ installed from an upstream repo (skills.json source), or authored
@@ -531,9 +533,10 @@ class Init(IsolatedKit):
         self.assertEqual(code, 0)
         self.assertIn("ALREADY EXISTS", out)
         self.assertEqual(sa.read_text(d / "AGENTS.md"), "# Existing\n")
+        self.assertTrue((d / ".agent").is_dir())
+        self.assertIn("agent-state", out)
         for f in sa.LEDGER_FILES:
-            self.assertTrue((d / f).is_file(), f)
-        self.assertIn("# Validation Contract", sa.read_text(d / "contract.md"))
+            self.assertFalse((d / f).exists(), f)
         self.assertEqual(run("init", self.repo("other", "# A\n"))[0], 2)
 
 
@@ -647,6 +650,14 @@ class Ledger(unittest.TestCase):
 
     def test_no_ledger(self):
         self.assertEqual(self.check()[0], 2)
+
+    def test_database_ledger_detected(self):
+        (self.repo / ".agent").mkdir()
+        (self.repo / ".agent" / "state.duckdb").write_bytes(b"duckdb-placeholder")
+        valid_ledger(self.repo)  # legacy files still around: the database wins
+        code, out = self.check(strict=True)
+        self.assertEqual(code, 0, out)
+        self.assertIn("DuckDB database, agent-state skill", out)
 
 
 if __name__ == "__main__":

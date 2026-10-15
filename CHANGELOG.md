@@ -2,6 +2,22 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Common block v3.0 — 2026-10-16
+
+- §2/§3 rewritten: the 4-file markdown/JSON ledger (`feature_list*.json`, `contract.md`, `progress.md`, `log.md` + monthly rotation into `docs/journal/`) is replaced by **one DuckDB database, `.agent/state.duckdb`**, managed exclusively through the new `agent-state` skill CLI. Variant B is absorbed: the database IS the standard.
+- The **4 operational directives** are kept and tightened: bounded `bootstrap` (active features, sprint, contract, last 20 log entries — never query the full history unfiltered, `search-log` instead), `log` at the start and end of each action, immediate `feature`/`step`/`contract` sync, `bootstrap` again as crash recovery (last committed transaction = valid state).
+- A legacy 4-file ledger is auto-migrated **with backup** on the first `bootstrap` (`.agent/legacy_markdown_backup/`); the 7 historical log types (`init gen eval fix sync done err`) migrate losslessly.
+- `sync_agents.py init --ledger` now prepares `.agent/` (no legacy files written); `ledger` reports the database when present, legacy checks otherwise. `--variant-b` stays recognized for not-yet-migrated repositories.
+- Block size: 7 994 → 7 122 bytes (budget < 8 KB).
+- **Migration (order matters)**: DEPLOY THE SKILL FIRST — `skills_agents.py sync <repo>` (installs `agent-state`), THEN `sync_agents.py sync <repo>` (canon v3.0), then run `state_agents.py migrate --repo <repo> --backup` (or let the first `bootstrap` do it). A repository left on v2.3 after kit `main` moves reports "behind" in the weekly CI until synced — release the kit and roll the fleet in the same window (runbook in `docs/MIGRATION.md`).
+
+## Tooling — 2026-10-16: agent-state skill (DuckDB ledger CLI)
+
+- New authored skill **`agent-state`** (MIT) shipping `scripts/state_agents.py` (byte-identical mirror, test-enforced): PEP 723 header declares `duckdb>=1.1.0` — `uv run --no-project <script> <command>` builds and caches an isolated environment, no global install, works on fresh clones and CI. Empirically verified against duckdb 1.5.6 (scratch probe; duckdb.org pages are client-rendered shells — facts proven by execution per §6).
+- Schema (idempotent, sequences for integer PKs): `features` (status CHECK, `dependencies VARCHAR[]`), `contract_meta` (`test_command`), `contract_criteria` (passed/locked), `sprint_progress` (objective/milestone), `execution_log` (7-type action CHECK, append-only). Ephemeral connections only (`.wal` folds into the database on clean close — verified).
+- `migrate [--backup]`: ONE transaction (rollback leaves the repository where it started, database removed if it was just created); parses both English and legacy French formats (headings, test-command line); tolerates bare-list archives; coerces unknown statuses to `pending` with a warning; re-keys archived ids colliding with reused active ids to `AA-<id>` (the kit's own ledger reuses F-xx across sprints — found by the rehearsal on real data, no silent loss); counts skipped `## [` lines; `--backup` archives sources and pins `.agent/*.duckdb.wal` in `.gitignore`.
+- Commands: `bootstrap` (auto-migration when the database is absent), `log`, `feature add/status`, `step add/done/reset`, `contract add/pass/cmd`, `search-log` (ILIKE, `--limit`), `export-md` (`.agent/DASHBOARD.md`). 19 new tests (118 total) — the suite now runs with `--with "duckdb>=1.1.0"`; English-only guard gains `.agent` in its SKIP set (binary database + migrated backups are state, not authored content).
+
 ## Common block v2.3 — 2026-10-11
 
 - §1 **Code search**: on large repositories (> 5k files, or a `.tgrep/` index folder present), agents must prefer the fast indexed `tgrep` CLI over slow recursive scans (`grep -r`, `find`, `Select-String`) — the pain point of big-asset projects (e.g. game repositories): `tgrep -- "pattern" .`, `tgrep -t <type> -- "pattern" .` for one file type (first use: `tgrep index .`; keep `.tgrep/` git-ignored). Below ~2k files, plain `git grep` and the standard tools are already instant. The block names the tool and the usage only; it stays free of machine paths (genericity invariant) — the binary (microsoft/tgrep, Rust, MIT) is installed on the fleet machines in `~/.local/bin`, already on PATH.

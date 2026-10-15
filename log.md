@@ -63,3 +63,4 @@
 ## [2026-10-16] gen | state_agents.py (schema, transactional migrate, full CLI), agent-state skill mirror, 19 tests (118/118 with duckdb); sync_agents init/ledger ready for v3.0.
 ## [2026-10-16] eval | Rehearsal on a copy of the real ledger: 110/110 log entries (all 7 types), 43 features; caught 15 id collisions archive vs active.
 ## [2026-10-16] fix | Migration re-keys colliding archived ids to AA-<id> (no silent loss); regression test added; gate 119/119 green, ruff green, checks green.
+## [2026-10-16] done | Local phase complete: 3 commits on feat/duckdb-state-ledger, 119/119 tests, ruff+checks green, rehearsal lossless; push/PR/merge, kit migration and fleet rollout wait for the GO.

@@ -30,7 +30,7 @@ jobs:
           python-version: ${{ matrix.python }}
           enable-cache: false
       - name: Unit tests (including the English-only guard)
-        run: uv run --no-project python -m unittest discover -s tests -v
+        run: uv run --no-project --with "duckdb>=1.1.0" python -m unittest discover -s tests -v
       - name: Canon registered (version + fingerprint)
         run: uv run --no-project python scripts/sync_agents.py version
       - name: Kit AGENTS.md and template identical to the canon

@@ -150,6 +150,7 @@ uv run --no-project python scripts/skills_agents.py audit [--strict]
 - **[2026-10-16] duckdb state sprint** — duckdb.org documentation pages are client-rendered JS shells (~600 bytes fetched, `.md` endpoints 404): an API fact is verified by EXECUTING a probe against the pinned package (duckdb 1.5.6 via the PEP 723 header), never by trusting the fetched doc text.
 - **[2026-10-16] duckdb state sprint** — a DuckDB statement one dedent outside its `with duckdb.connect(...)` block raises "Connection already closed": every statement of a command stays inside the with-block (caught by the smoke run before commit).
 - **[2026-10-16] duckdb state rehearsal** — the kit ledger reuses feature ids across sprints (active F-05..F-19 vs archived F-01..F-24): a single primary-key table cannot hold both rows, and "archive then INSERT OR REPLACE" silently dropped 15 archived features on the rehearsal copy. The migration re-keys colliding archived ids to `AA-<id>` with a printed warning; repositories with the same id habit stay lossless.
+- **[2026-10-16] fleet CRLF pitfall** — fleet repositories run `core.autocrlf=true`: any checkout smudges the committed `.agents/skills/**` LF files to CRLF, and the raw sha256 fingerprints then flag every install as "hand-edited" (7 false positives across 4 repositories, zero real edits — proven with `diff --strip-trailing-cr`). Fix pinned fleet-wide: `.gitattributes` rules `.agents/skills/** text eol=lf` + `.agent/*.duckdb* binary`; the check stays byte-strict.
 
 ### References
 

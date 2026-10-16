@@ -17,7 +17,8 @@ Per repository, in this order:
 2. `uv run --no-project python scripts/sync_agents.py sync ../<repo>` — canon v3.0 (AFTER the skill, never before);
 3. if a legacy ledger exists (`feature_list*.json`, `contract.md`, `progress.md`, `log.md`, `docs/journal/`): `uv run --no-project scripts/state_agents.py --repo ../<repo> migrate --backup` — one transaction, sources archived into `.agent/legacy_markdown_backup/`, `.agent/*.duckdb.wal` pinned in the repository's `.gitignore`; the first `bootstrap` does it automatically otherwise;
 4. check the migrated counts against the source files (`bootstrap` output), commit `.agent/state.duckdb` + the removed legacy files in one commit per repository (`chore: agents-kit v3.0 - DuckDB ledger migration`);
-5. repositories with extended statuses (e.g. `awaiting_playtest`) or extended log types: they are coerced to `pending` / skipped with a count at migration — reconcile right after, in the database.
+5. each migrated repository also receives `.gitattributes` rules pinning `.agents/skills/** text eol=lf` and `.agent/*.duckdb* binary` — git autocrlf hardening: without them, any checkout smudges the byte-frozen skill installs to CRLF and the fingerprints flag "hand-edited";
+6. repositories with extended statuses (e.g. `awaiting_playtest`) or extended log types: they are coerced to `pending` / skipped with a count at migration — reconcile right after, in the database.
 
 Never `--force` anything during the rollout; a repository that refuses (hand-edited block, dirty tree, CI guard red) is held and listed with its reason. The kit's own ledger flips in the same window (`migrate --backup --repo .`).
 

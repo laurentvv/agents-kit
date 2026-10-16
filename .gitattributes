@@ -1,3 +1,4 @@
-# agents-kit artifacts: byte-frozen skill installs (LF) and the DuckDB ledger (binary)
+# agents-kit artifacts: byte-frozen skill source and installs (LF), the DuckDB ledger (binary)
+skills/** text eol=lf
 .agents/skills/** text eol=lf
 .agent/*.duckdb* binary

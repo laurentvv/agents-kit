@@ -96,3 +96,19 @@ These exclusions are declared in `<root>/.agents-kit-ignore` (one folder-name gl
 
 - `uv run --no-project python scripts/sync_agents.py audit --strict` returns 0: only "up to date" (managed repositories), "generated" (pure OpenSpec) and "excluded" remain.
 - Any future change to the common block: edit `agents-common.md`, bump the version, `version --register`, resync the template and the kit's AGENTS.md, then `sync` repository by repository (a "hand-edited" repository is refused: `check --diff` first).
+
+## Local-only state (canon v3.1) — untrack `.agent/` and `.agents/`
+
+Since canon v3.1, the state database (`.agent/`) and the installed skill copies (`.agents/`) are **local-only**: git-ignored from initialization, never committed — a heavy binary and hundreds of installed scripts bloat public GitHub repositories and skew their language statistics. The files stay on disk; only their git carriage changes.
+
+- New repositories: nothing to do — `sync_agents.py init` and `skills_agents.py sync` pin both entries in the target `.gitignore` automatically.
+- Repositories that already committed them (one-time, per repository, working tree left intact):
+
+```bash
+git rm -r --cached .agent .agents
+git commit -m "chore: untrack .agent and .agents from git (keep local)"
+git push
+```
+
+- Re-running `skills_agents.py sync <repo>` (or `deploy`) also repairs the `.gitignore` of an affected repository and prints the untrack reminder — the normal skill update cycle heals the fleet.
+- The kit itself was untracked with the v3.1 release (its `.agent/state.duckdb` ledger and `.agents/` dogfood install stay on disk, no longer distributed by git; consumers receive the canonical copies from `skills/` as before).

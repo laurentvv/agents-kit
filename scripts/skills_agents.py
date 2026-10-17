@@ -67,6 +67,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 try:  # reuse the helpers of sync_agents.py when it is importable (tests preload it)
     from sync_agents import (
         InputError,
+        ensure_local_only_gitignore,
         local_today,
         read_exclusions,
         read_text,
@@ -80,6 +81,7 @@ except ImportError:  # loaded from outside scripts/ without a preload: load by p
     _spec.loader.exec_module(_mod)
     from sync_agents import (
         InputError,
+        ensure_local_only_gitignore,
         local_today,
         read_exclusions,
         read_text,
@@ -489,8 +491,10 @@ def sync_repo(repo: Path, registry: dict[str, dict], only: str | None, force: bo
               standalone: bool = True) -> str:
     """Apply (or plan when dry_run) the kit skills in one repository.
 
-    Returns "refused" (a hand-edited install needs --force), "applied" (changes
-    written or planned) or "up_to_date" (nothing to do). Raises InputError.
+    Also pins the local-only .gitignore entries (.agent/, .agents/) in the target
+    (canon v3.1 §2). Returns "refused" (a hand-edited install needs --force),
+    "applied" (changes written or planned) or "up_to_date" (nothing to do).
+    Raises InputError.
     """
     skills_dir, lock, plans = plan_repo(repo, registry, only)
     refused = [p for p in plans if p.action in ("hand_edited", "unmanaged")]
@@ -527,6 +531,7 @@ def sync_repo(repo: Path, registry: dict[str, dict], only: str | None, force: bo
         return "applied" if done else "up_to_date"
     if changed:
         save_lock(skills_dir, lock)
+    ensure_local_only_gitignore(repo)
     print(f"Applied: {done} skill(s)" if done else "Nothing to do")
     return "applied" if done else "up_to_date"
 

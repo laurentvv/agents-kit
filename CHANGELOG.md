@@ -2,6 +2,17 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Common block v3.1 — 2026-10-18
+
+- §2 policy flip: the ledger database is **local-only** — `.agent/` (state database, legacy backups) and `.agents/` (installed skill copies) are git-ignored from initialization and never committed (a heavy binary and installed scripts would bloat public GitHub repositories and skew their language statistics). The on-disk state remains the source of truth; only its git carriage changes.
+- **Fleet migration (one-time per repository)**: if `.agent/` or `.agents/` were committed before, untrack them without touching the disk — `git rm -r --cached .agent .agents`, commit, push. `sync_agents.py init` and `skills_agents.py sync` now pin both entries in the target `.gitignore` automatically (runbook in `docs/MIGRATION.md`).
+
+## Tooling — 2026-10-18: local-only .gitignore enforcement
+
+- `sync_agents.py init` writes or extends the target `.gitignore` with `.agent/` + `.agents/` (idempotent, existing content preserved, refusal paths write nothing).
+- `skills_agents.py sync` (and `deploy`) pin the same entries in every repository it touches, with an untrack reminder printed when it adds them; `--dry-run` never writes.
+- `state_agents.py` unchanged (its `.agent/*.duckdb.wal` line stays valid, now subsumed by `.agent/`).
+
 ## Common block v3.0 — 2026-10-16
 
 - §2/§3 rewritten: the 4-file markdown/JSON ledger (`feature_list*.json`, `contract.md`, `progress.md`, `log.md` + monthly rotation into `docs/journal/`) is replaced by **one DuckDB database, `.agent/state.duckdb`**, managed exclusively through the new `agent-state` skill CLI. Variant B is absorbed: the database IS the standard.

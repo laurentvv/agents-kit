@@ -189,8 +189,8 @@ agents-kit/
 ├── docs/audit-2026-09-26.md      ← the initial audit (24 real files)
 ├── docs/MIGRATION.md             ← action plan, repository by repository
 ├── AGENTS.md                     ← the kit dogfoods its own base…
-├── .agent/state.duckdb           ← …and its own DuckDB ledger (migrated 2026-10-16)
-├── .agent/legacy_markdown_backup/ ← pre-2026-10-16 ledger: closed-sprint contracts, progress, rotated logs
+├── .agent/state.duckdb           ← …and its own DuckDB ledger (migrated 2026-10-16; local only, git-ignored)
+├── .agent/legacy_markdown_backup/ ← pre-2026-10-16 ledger: closed-sprint contracts, progress, rotated logs (git-ignored)
 └── LICENSE                       ← MIT
 ```
 

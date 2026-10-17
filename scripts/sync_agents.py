@@ -21,6 +21,8 @@ Commands
                              --force: overwrite an existing file.
                              --ledger: also prepare the .agent/ folder (the agent-state
                              bootstrap creates state.duckdb on first run).
+                             Pins .agent/ + .agents/ in the target .gitignore either way
+                             (local-only state, canon v3.1 §2: never committed).
   adopt <repo>              Insert the common block into an existing unmanaged AGENTS.md without
                              losing anything: the previous content moves to §7 (--dry-run available).
   ledger <repo>             Check (read-only) the state: reports the .agent/state.duckdb database
@@ -398,6 +400,7 @@ def cmd_init(repo: Path, name: str | None, force: bool, ledger: bool) -> int:
         print(f"{'Replaced' if existed else 'Created'}: {target}")
     if ledger:
         create_ledger(repo)
+    ensure_local_only_gitignore(repo)
     return 0
 
 
@@ -407,6 +410,35 @@ def create_ledger(repo: Path) -> None:
     (repo / ".agent").mkdir(parents=True, exist_ok=True)
     print("Created: .agent/ - initialize the database with the agent-state bootstrap:")
     print("  uv run --no-project .agents/skills/agent-state/scripts/state_agents.py bootstrap")
+
+
+LOCAL_ONLY_LINES = (".agent/", ".agents/")
+LOCAL_ONLY_COMMENT = "# Agent local state (ledger, installed skills) - kept on disk, never committed"
+
+
+def ensure_local_only_gitignore(repo: Path) -> None:
+    """Pin the local-only entries in the target .gitignore (canon v3.1 §2: .agent/
+    and .agents/ stay on disk and are never committed). Idempotent, content-preserving;
+    silent when the entries are already there."""
+    gi = repo / ".gitignore"
+    try:
+        lines = read_text(gi).split("\n") if gi.is_file() else []
+    except UnicodeDecodeError:
+        print(f"WARNING: {gi} is not UTF-8 - add {LOCAL_ONLY_LINES[0]} and"
+              f" {LOCAL_ONLY_LINES[1]} by hand")
+        return
+    present = [ln.strip() for ln in lines]
+    missing = [ln for ln in LOCAL_ONLY_LINES if ln not in present]
+    if not missing:
+        return
+    text = "\n".join(lines)
+    if lines and lines[-1].strip():
+        text += "\n"
+    add = ([] if LOCAL_ONLY_COMMENT in present else [LOCAL_ONLY_COMMENT]) + missing
+    text += "\n".join(add) + "\n"
+    write_text(gi, text)
+    print(f"GITIGNORE: added {', '.join(missing)} to {gi}"
+          " (if they were committed before, untrack them: git rm -r --cached .agent .agents)")
 
 
 def insert_block(text: str, canon: str) -> str:

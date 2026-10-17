@@ -401,6 +401,48 @@ class Sync(Kit):
         self.assertEqual(self.lock(r)["skills"], {})
 
 
+class SyncGitignore(Kit):
+    """sync (and deploy, via sync_repo) pin the local-only .gitignore entries."""
+
+    def test_sync_pins_local_only_entries(self):
+        self.vendored()
+        r = self.repo("r1")
+        code, out = run("sync", r)
+        self.assertEqual(code, 0, out)
+        text = (r / ".gitignore").read_text(encoding="utf-8")
+        self.assertIn("# Agent local state", text)
+        self.assertIn("\n.agent/\n", text)
+        self.assertIn("\n.agents/\n", text)
+        self.assertIn("git rm -r --cached", out)
+
+    def test_dry_run_writes_no_gitignore(self):
+        self.vendored()
+        r = self.repo("r2")
+        code, out = run("sync", r, "--dry-run")
+        self.assertEqual(code, 0, out)
+        self.assertFalse((r / ".gitignore").exists())
+
+    def test_existing_gitignore_preserved(self):
+        self.vendored()
+        r = self.repo("r3")
+        write(r / ".gitignore", "node_modules/\n")
+        code, out = run("sync", r)
+        self.assertEqual(code, 0, out)
+        text = (r / ".gitignore").read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("node_modules/\n"))
+        self.assertEqual(text.count(".agents/"), 1)
+
+    def test_up_to_date_still_pins(self):
+        self.vendored()
+        r = self.repo("r4")
+        run("sync", r)
+        (r / ".gitignore").unlink()
+        code, out = run("sync", r)
+        self.assertEqual(code, 0, out)
+        self.assertTrue((r / ".gitignore").is_file())
+        self.assertIn("Nothing to do", out)
+
+
 class Check(Kit):
     def test_exit_codes(self):
         self.vendored()

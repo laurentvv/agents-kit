@@ -540,6 +540,61 @@ class Init(IsolatedKit):
         self.assertEqual(run("init", self.repo("other", "# A\n"))[0], 2)
 
 
+class LocalOnlyGitignore(IsolatedKit):
+    """init pins .agent/ + .agents/ in the target .gitignore (canon: local-only state)."""
+
+    def test_init_pins_entries(self):
+        d = self.repo("fresh")
+        code, out = run("init", d, "--name", "Fresh")
+        self.assertEqual(code, 0, out)
+        text = (d / ".gitignore").read_text(encoding="utf-8")
+        self.assertIn("# Agent local state", text)
+        self.assertIn("\n.agent/\n", text)
+        self.assertIn("\n.agents/\n", text)
+        self.assertIn("git rm -r --cached", out)
+
+    def test_init_preserves_existing_gitignore(self):
+        d = self.repo("withgi")
+        write(d / ".gitignore", "node_modules/\n.env\n")
+        code, out = run("init", d, "--name", "W")
+        self.assertEqual(code, 0, out)
+        text = (d / ".gitignore").read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("node_modules/\n.env\n"))
+        self.assertIn(".agent/", text)
+        self.assertIn(".agents/", text)
+
+    def test_init_idempotent(self):
+        d = self.repo("idem")
+        run("init", d, "--name", "I")
+        first = (d / ".gitignore").read_text(encoding="utf-8")
+        code, _ = run("init", d, "--force", "--name", "I")
+        self.assertEqual(code, 0)
+        self.assertEqual((d / ".gitignore").read_text(encoding="utf-8"), first)
+
+    def test_refusal_writes_no_gitignore(self):
+        d = self.repo("refused", managed_file())
+        code, _ = run("init", d, "--name", "R")
+        self.assertEqual(code, 2)
+        self.assertFalse((d / ".gitignore").exists())
+
+    def test_crlf_gitignore_no_duplicates(self):
+        d = self.repo("crlf")
+        (d / ".gitignore").write_bytes(b"target/\r\n.agent/\r\n")
+        code, out = run("init", d, "--name", "C")
+        self.assertEqual(code, 0, out)
+        text = (d / ".gitignore").read_text(encoding="utf-8")
+        self.assertEqual(text.count(".agent/"), 1)
+        self.assertIn(".agents/", text)
+
+    def test_non_utf8_gitignore_warns_without_writing(self):
+        d = self.repo("binary")
+        (d / ".gitignore").write_bytes(b"\xff\xfe garbage\n")
+        code, out = run("init", d, "--name", "B")
+        self.assertEqual(code, 0, out)
+        self.assertIn("not UTF-8", out)
+        self.assertNotIn(".agents/", (d / ".gitignore").read_bytes().decode("utf-8", "replace"))
+
+
 class Cli(unittest.TestCase):
     def test_old_french_flags_are_rejected(self):
         for args in (["check", ".", "--fichier", "x"], ["init", ".", "--nom", "x"], ["audit", "--exclure", "x"],

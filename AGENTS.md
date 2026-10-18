@@ -76,11 +76,12 @@ The dependency (`duckdb>=1.1.0`) is declared inside the script (PEP 723): uv bui
 
 ### Mission / scope
 
-Canonical repository of the **common AGENTS.md base**: the delimited block in `agents-common.md`, the instantiation template and the `scripts/sync_agents.py` script (audit / check / sync / adopt / init / ledger / version) that distributes it to neighbouring repositories. The kit also vendors and distributes **common agent skills** (`scripts/skills_agents.py`: add / author / list / check / sync / audit) into the repositories' `.agents/skills/` folders, and ships since canon v3.0 the **agent-state** skill (`scripts/state_agents.py`): the DuckDB ledger CLI every repository runs (`.agent/state.duckdb`). Public GitHub project, MIT license. The kit contains **no machine path and no specific repository name** — the specific part lives in each consuming repository.
+Canonical repository of the **common AGENTS.md base**: the delimited block in `agents-common.md`, the instantiation template and the `scripts/sync_agents.py` script (audit / check / sync / adopt / init / ledger / version) that distributes it to neighbouring repositories. The kit also vendors and distributes **common agent skills** (`scripts/skills_agents.py`: add / author / list / check / sync / audit) into the repositories' `.agents/skills/` folders, and ships since canon v3.0 the **agent-state** skill (`scripts/state_agents.py`): the DuckDB ledger CLI every repository runs (`.agent/state.duckdb`). Since 2026-10-18 it ships the **agent-mcp** skill (`scripts/mcp_agents.py`): MCP fleet management (inventory / audit / probe / doctor / start-stop-restart) driven by a local, git-ignored `mcp-fleet.local.yml` descriptor (template committed; machine paths never enter the kit). Public GitHub project, MIT license. The kit contains **no machine path and no specific repository name** — the specific part lives in each consuming repository.
 
 ### Declared locations (deviations from the common block)
 
 - Ledger: `.agent/state.duckdb` via the agent-state skill — migrated from the legacy 4-file ledger on 2026-10-16 (113 log entries, sources kept in `.agent/legacy_markdown_backup/`); `ledger .` reports the database. History before 2026-10-16 (closed-sprint contracts, progress, rotated logs) lives in that backup. Between sprints, the active features list is empty.
+- MCP fleet descriptor: `mcp-fleet.local.yml` at the kit root — local-only, git-ignored, machine paths only (template: `template/mcp-fleet.template.yml`). `mcp_agents.py doctor` exits non-zero while any declared MCP entry is down, stale or references missing paths.
 - Statuses / log types: standard, no extension.
 - Shell: Git Bash. Kit file encoding: **UTF-8 without BOM, LF line endings** (the script writes `newline="\n"`).
 - Language: standard §1 rule (repository content in English, chat replies to the user in French); `tests/` fails on any French character, French word or French file name in the repository.
@@ -90,6 +91,12 @@ Canonical repository of the **common AGENTS.md base**: the delimited block in `a
 ```bash
 # state ledger CLI (agent-state skill; canonical copy scripts/state_agents.py, duckdb>=1.1.0 via PEP 723)
 uv run --no-project .agents/skills/agent-state/scripts/state_agents.py bootstrap
+# MCP fleet CLI (agent-mcp skill; stdlib only, descriptor mcp-fleet.local.yml, read-only except lifecycle)
+uv run --no-project python scripts/mcp_agents.py inventory
+uv run --no-project python scripts/mcp_agents.py audit
+uv run --no-project python scripts/mcp_agents.py probe <name>
+uv run --no-project python scripts/mcp_agents.py doctor   # CI gate: non-zero on down/stale/missing
+uv run --no-project python scripts/mcp_agents.py start|stop|restart <name>
 # fleet state (default: parent folder of the kit)
 uv run --no-project python scripts/sync_agents.py audit
 # check / resync one repository
@@ -125,8 +132,9 @@ uv run --no-project python scripts/skills_agents.py audit [--strict]
 - **Legacy markers**: v1.x blocks use the `agents-commun` marker name; the script keeps recognizing it so that `sync` migrates a repository to `agents-common`. Do not drop that compatibility while the fleet may still hold v1.x blocks.
 - **Block budget**: < 8 KB (loaded in every session of every repository) — any added rule must be generic and earn its place.
 - **Strict markers**: one `<!-- BEGIN:agents-common … -->` line, one `<!-- END:agents-common -->` line — the script only replaces between them. Do not nest other markers inside the block.
-- **Zero dependency** for `sync_agents.py`, `skills_agents.py` and their tests (standard library only, Python 3.11+); no write outside the target files; `audit`, `check` and `ledger` never modify anything. The state CLI (`scripts/state_agents.py`) adds exactly one dependency — `duckdb>=1.1.0`, declared in its PEP 723 header and AST-guarded by test; its tests run with `--with "duckdb>=1.1.0"` (plain `uv run` installs duckdb from the script header automatically).
+- **Zero dependency** for `sync_agents.py`, `skills_agents.py`, `mcp_agents.py` and their tests (standard library only, Python 3.11+); no write outside the target files; `audit`, `check` and `ledger` never modify anything. The state CLI (`scripts/state_agents.py`) adds exactly one dependency — `duckdb>=1.1.0`, declared in its PEP 723 header and AST-guarded by test; its tests run with `--with "duckdb>=1.1.0"` (plain `uv run` installs duckdb from the script header automatically).
 - **State script mirror**: `scripts/state_agents.py` and `skills/agent-state/scripts/state_agents.py` are byte-identical (test-enforced, same discipline as the kit/template block). Edit the canonical copy, mirror it, then `skills_agents.py author agent-state --force` and `sync .` before committing.
+- **MCP script mirror + safety**: `scripts/mcp_agents.py` and `skills/agent-mcp/scripts/mcp_agents.py` are byte-identical (test-enforced, same discipline). `inventory`/`audit`/`probe`/`doctor` are strictly read-only and mask token-like values (token, key, secret, password); the only effectful commands are the declared lifecycle ones; the descriptor never carries secrets and is never committed.
 - **No silent loss**: `sync` does not overwrite a hand-edited or newer block without `--force`; `adopt` keeps every original line. Every new write path gets its regression test.
 - **Canon-independent tests**: no block version or section title hardcoded in `tests/` — a version bump breaks no test.
 - **`main` is consumed live**: the repositories' CI runs `agents-md-check.yml` against the kit's `main` — never break the `check` command line or merge an unregistered canon there; release the kit before syncing the fleet.
@@ -155,4 +163,4 @@ uv run --no-project python scripts/skills_agents.py audit [--strict]
 
 ### References
 
-- Full audit: `docs/audit-2026-09-26.md` — migration plan: `docs/MIGRATION.md` — version history: `CHANGELOG.md` — token measurement: `docs/token-measurement-2026-09-26.md` — tests: `tests/` — CI: `.github/workflows/ci.yml` — repositories' guard: `.github/workflows/agents-md-check.yml` + `template/agents-md.yml` — skills: `scripts/skills_agents.py` + `skills.json` + `skills/` — state CLI: `scripts/state_agents.py` + `skills/agent-state/`.
+- Full audit: `docs/audit-2026-09-26.md` — migration plan: `docs/MIGRATION.md` — version history: `CHANGELOG.md` — token measurement: `docs/token-measurement-2026-09-26.md` — tests: `tests/` — CI: `.github/workflows/ci.yml` — repositories' guard: `.github/workflows/agents-md-check.yml` + `template/agents-md.yml` — skills: `scripts/skills_agents.py` + `skills.json` + `skills/` — state CLI: `scripts/state_agents.py` + `skills/agent-state/` — MCP fleet CLI: `scripts/mcp_agents.py` + `skills/agent-mcp/` + `template/mcp-fleet.template.yml` + `docs/mcp-fleet-rollout-2026-10-18.md`.

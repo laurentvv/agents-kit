@@ -3,3 +3,7 @@ skills/** text eol=lf
 scripts/** text eol=lf
 .agents/skills/** text eol=lf
 .agent/*.duckdb* binary
+
+# Templates are canon material: byte-stable across checkouts (lesson 2026-10-18)
+template/** text eol=lf
+skills.json text eol=lf

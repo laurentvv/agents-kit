@@ -2,6 +2,14 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Tooling — 2026-10-18: MCP fleet management (agent-mcp)
+
+- New kit concern — the machine's **MCP servers** — with the same disciplines as the other three: new stdlib-only CLI `scripts/mcp_agents.py` (Python 3.11+, zero dependency), authored skill `skills/agent-mcp/` (MIT, `NOTICE.md` provenance, byte-identical mirror test-enforced), LF-pinned paths in `.gitattributes`.
+- Commands: `inventory` (parses user-level configs holding a `mcpServers` or `mcp.servers` key + repo-level `.mcp.json` files walked under the fleet roots; token-like values masked), `audit` (declared vs running: localhost HTTP / process / command probes, `up / down / unknown`), `probe <name>` (probe + freshness globs like `**/BUILT_AT.txt` with an age budget + every absolute path referenced by the server's own config file), `doctor` (all of it, exit 1 on any down/stale/missing — CI gate), `start|stop|restart <name>` (runs the lifecycle commands declared in the descriptor; the only effectful commands).
+- **Fleet descriptor**: machine specifics live in a local, git-ignored `mcp-fleet.local.yml` next to `.agent/` (template committed as `template/mcp-fleet.template.yml`, path-free, guard-tested). The kit keeps carrying no machine path and no server name. Discovery order: `--config` > `MCP_FLEET_CONFIG` > `<repo>/mcp-fleet.local.yml` > upward walk.
+- **Safety**: the read-only commands never write; token/key/secret/password values are masked in every output including `--json`; lifecycle actions run only what the descriptor declares. `.gitattributes` gains `template/** text eol=lf` (byte-stable templates across checkouts) and `skills.json text eol=lf`.
+- Real verification (2026-10-18): `doctor` caught a search daemon down for 8 days (exit 1) plus 3 directories referenced by its config that no longer exist; the declared `start` command brought it back (HTTP 200), and the second MCP entry (stdio fast path) reported HEALTHY with fresh corpus markers. Rollout and redacted evidence: `docs/mcp-fleet-rollout-2026-10-18.md`.
+
 ## Common block v3.1 — 2026-10-18
 
 - §2 policy flip: the ledger database is **local-only** — `.agent/` (state database, legacy backups) and `.agents/` (installed skill copies) are git-ignored from initialization and never committed (a heavy binary and installed scripts would bloat public GitHub repositories and skew their language statistics). The on-disk state remains the source of truth; only its git carriage changes.

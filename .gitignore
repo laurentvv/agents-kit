@@ -8,3 +8,4 @@ scratch/
 # Agent local state (ledger, installed skills) - kept on disk, never committed
 .agent/
 .agents/
+mcp-fleet.local.yml

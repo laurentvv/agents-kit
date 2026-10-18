@@ -1,0 +1,43 @@
+# mcp-fleet.local.yml - LOCAL fleet descriptor for scripts/mcp_agents.py.
+# Copy this template next to .agent/ as mcp-fleet.local.yml and fill in the
+# machine paths. NEVER COMMIT IT: machine specifics stay out of the kit (the
+# file is git-ignored, like .agent/ and .agents/).
+#
+# Format: a small YAML subset parsed by scripts/mcp_agents.py - nested
+# mappings (spaces only, no tabs), block lists of scalars or of mappings,
+# inline flow lists (['a', 'b']), single-quoted strings (use single quotes
+# around Windows paths so backslashes stay literal), comments, blank lines.
+# Anything outside the subset fails with a clean error.
+#
+# Safety: inventory/audit/probe/doctor are strictly read-only. start/stop/
+# restart run the declared lifecycle commands (the only effectful commands).
+# Values under token-like keys (token, key, secret, password) are masked in
+# every output.
+
+version: 1
+
+defaults:
+    timeout_seconds: 3          # probe HTTP/command timeout in seconds
+
+inventory:                      # optional; inventory also works with no descriptor
+    user_configs: []            # extra user-level JSON configs (mcpServers or mcp.servers key)
+    fleet_roots: []             # extra roots walked for repo-level .mcp.json files
+
+servers:
+    my-daemon:
+        description: example localhost daemon (rename me)
+        probe:
+            url: 'http://127.0.0.1:8080/'       # any HTTP response counts as up
+        # Alternative probes (one per server):
+        #   command: ['<path>/tool.exe', '--version']   # exit 0 = up (stdio servers)
+        #   process: my-daemon.exe                      # running process = up
+        lifecycle:                              # optional; the only effectful commands
+            start: '<path>/start-my-daemon.cmd'
+            stop: '<path>/stop-my-daemon.cmd'   # restart falls back to stop, then start
+        freshness:                              # optional; the newest match wins
+            roots: ['<path>/corpus']
+            globs: ['**/BUILT_AT.txt']
+            max_age_hours: 336                  # stale beyond this budget (hours)
+        referenced_paths:                       # optional; every absolute path referenced
+            config_file: '<path>/config.yml'    # by this file must exist on disk
+        config_sources: []                      # optional; each declared file must exist

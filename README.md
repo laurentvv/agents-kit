@@ -149,6 +149,32 @@ uv run --no-project python scripts/skills_agents.py audit [--strict] [--exclude 
 
 Provenance and drift detection: `skills.json` (kit) records for each skill its source, the pinned commit, the import date, the license and the per-file sha256 fingerprints; the per-repository lock `.agents/skills/.agents-kit.json` holds the same data for what is installed. Only `add` needs network (GitHub tarball + API, unauthenticated: 60 requests/hour); `check`/`sync`/`audit` never do — the kit copy is the single distribution source. Vendored skills keep their upstream license (`skills.json` records the SPDX identifier when found): review what you vendor, and re-run `add --force` to pick up an upstream update, then `sync` the fleet. **Authored skills** (`source: "(authored)"`) have no upstream: `update` skips them, and after editing the kit copy you re-register with `author <name> --force`; their license is recorded at registration time.
 
+## MCP fleet (`scripts/mcp_agents.py`)
+
+The fourth managed concern, next to the canon, the skills and the state: the machine's **MCP servers**. Localhost daemons die silently, indexer configs keep referencing renamed directories, corpora go stale — `doctor` catches all three and exits non-zero (CI-usable). Machine specifics live in a **local, git-ignored descriptor** (`mcp-fleet.local.yml` next to `.agent/`, template: [`template/mcp-fleet.template.yml`](template/mcp-fleet.template.yml)): the kit itself holds no machine path and no server name. Standard library only; `inventory`/`audit`/`probe`/`doctor` are strictly read-only; the only effectful commands are the declared lifecycle ones.
+
+```bash
+# One-time: copy the template next to .agent/ and fill in the machine paths
+cp template/mcp-fleet.template.yml mcp-fleet.local.yml
+
+# What is declared (user-level configs with mcpServers / mcp.servers + repo-level .mcp.json)
+uv run --no-project python scripts/mcp_agents.py inventory [--fleet ROOT] [--json]
+
+# Declared vs running: probe each descriptor entry (localhost HTTP, process or command)
+uv run --no-project python scripts/mcp_agents.py audit
+
+# Deep check of one entry: probe + freshness globs (e.g. **/BUILT_AT.txt) + referenced paths
+uv run --no-project python scripts/mcp_agents.py probe <name>
+
+# The gate: audit + freshness + referenced paths for every entry, non-zero on any failure
+uv run --no-project python scripts/mcp_agents.py doctor
+
+# Lifecycle through the declared commands only (e.g. a start-*.cmd)
+uv run --no-project python scripts/mcp_agents.py start|stop|restart <name>
+```
+
+Token-like values (token, key, secret, password) are masked in every output. See [`docs/mcp-fleet-rollout-2026-10-18.md`](docs/mcp-fleet-rollout-2026-10-18.md) for a real verification run (down daemon, stale index references, lifecycle).
+
 ## Compatibility
 
 - **Upgrading from v1.x**: v1.x blocks were written in French with `agents-commun` markers. The script still recognizes them: `audit` reports them as "behind" and `sync` replaces them with the v2.0 block and its `agents-common` markers, the §7 staying byte-identical. See [`docs/MIGRATION.md`](docs/MIGRATION.md).

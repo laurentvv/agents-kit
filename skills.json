@@ -1,6 +1,17 @@
 {
   "version": 1,
   "skills": {
+    "agent-mcp": {
+      "source": "(authored)",
+      "ref": "2026-10-18",
+      "imported": "2026-10-18",
+      "files": {
+        "NOTICE.md": "7127366abc02c090790429139853ad8e615268d0a881f344c718bab8f401c893",
+        "scripts/mcp_agents.py": "5f3bc8980b9c457473918a167589b18122c4e424318ee067e3649b30ab89411a",
+        "SKILL.md": "3fda7a1384a008deb12082dea94506376fe8d6d073880cadc1dd46391ac5a65d"
+      },
+      "license": "MIT"
+    },
     "agent-state": {
       "source": "(authored)",
       "ref": "2026-10-16",
@@ -350,15 +361,6 @@
       },
       "license": "MIT"
     },
-    "neo-brutalism": {
-      "source": "madebymustafa/design-taste",
-      "ref": "c4a6bff0871eb4b15371b0e7d2751628b0ed4608",
-      "imported": "2026-10-14",
-      "files": {
-        "SKILL.md": "bc71fa3bba394f4a314b244003eabfad4a705caaee407a277f721267b14deb2e"
-      },
-      "license": "MIT"
-    },
     "pick-ui-library": {
       "source": "emilkowalski/skills",
       "ref": "2d228630ba1446365f614a108cb8252f1feda202",
@@ -488,33 +490,6 @@
       },
       "license": "Apache-2.0",
       "updated": "2026-10-16"
-    },
-    "taste-accessibility": {
-      "source": "madebymustafa/design-taste",
-      "ref": "c4a6bff0871eb4b15371b0e7d2751628b0ed4608",
-      "imported": "2026-10-14",
-      "files": {
-        "SKILL.md": "4d293f850d91330f98812ec6a36110ddbd9d2337f58719d32e9731a4ea519558"
-      },
-      "license": "MIT"
-    },
-    "taste-gsap": {
-      "source": "madebymustafa/design-taste",
-      "ref": "c4a6bff0871eb4b15371b0e7d2751628b0ed4608",
-      "imported": "2026-10-14",
-      "files": {
-        "SKILL.md": "648b1b14375061b643fa1f45a2f65ac12edd0bd6c9a489f24f60cd21f547ef5f"
-      },
-      "license": "MIT"
-    },
-    "taste-web-performance": {
-      "source": "madebymustafa/design-taste",
-      "ref": "c4a6bff0871eb4b15371b0e7d2751628b0ed4608",
-      "imported": "2026-10-14",
-      "files": {
-        "SKILL.md": "1d2a07263d33ce98cc708a2d056eadb1636e9a78d9ad04a93896630bf6ec5213"
-      },
-      "license": "MIT"
     },
     "taste-accessibility": {
       "source": "madebymustafa/design-taste",

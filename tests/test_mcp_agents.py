@@ -132,7 +132,8 @@ class Discovery(Temp):
         nested.mkdir(parents=True)
         self.descriptor()
         found = ma.find_descriptor(nested, None)
-        self.assertEqual(found, self.repo / "mcp-fleet.local.yml")
+        # resolve() on both sides: a CI runner may hand out 8.3 short names.
+        self.assertEqual(found.resolve(), (self.repo / "mcp-fleet.local.yml").resolve())
 
     def test_explicit_config_wins(self):
         self.descriptor()

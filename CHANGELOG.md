@@ -2,6 +2,12 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Tooling — 2026-10-18: Blender skills pack (vendored subset)
+
+- New vendored skills: **`blender-core`**, **`blender-export-pipelines`**, **`blender-rendering`**, **`blender-pipeline-automation`** (MIT, `EL4CTEO/blender-skills` pinned at `71d031da`) — first Blender coverage in the kit, aligned with the Blender 5.2 LTS corpus served by the knowledge-router fast path. `blender-core` routes and runs bpy (headless CLI or live MCP), the three others cover verified export presets (Roblox/Unity/Unreal/Godot-web/USD), Cycles/EEVEE batch rendering, and folder-scale batch automation.
+- Deliberate subset (4 of the 22 upstream skills): the vendored four are self-contained (each carries its own `_bpyx.py` helper) and match the fleet's 3D pipelines; the upstream router table in `blender-core` and two doc examples in `blender-pipeline-automation` mention sibling skills that are not vendored — read as pointers, not dependencies. Review before `add` (§5/§6): scripts scanned — no network, no eval, one legitimate `blender -b -P` subprocess; upstream ships 50 headless Blender tests of its own.
+- `run_in_blender.py` carries the only shebang and is committed 100755 (EXE001 discipline); non-ASCII in the skills is pure typography (→, ·, ≥), no French — the vendored-with-source exemption applies regardless.
+
 ## Tooling — 2026-10-18: gpui-kit skill
 
 - New authored skill: **`gpui-kit`** (MIT) — build cross-platform Rust desktop apps with GPUI Kit (Longbridge's component library on Zed's GPUI engine, shadcn/ui-inspired, 75+ components). Covers the minimal bootstrap recipe with exact Windows prerequisites (VS 2022 Build Tools MSVC + Windows SDK, CMake on PATH, MSVC toolchain not GNU), the "rules that bite" (`init(cx)` before any window, never return a second `Root`, never depend on `gpui`/`gpui-pre` directly, two-layer imports, 0.x API churn — pin the tested version), the component map (virtualized data tables, dock layout, charts, markdown, tree-sitter/LSP editor), semantic-token theming, and a "when to prefer Slint/egui/Tauri" guide.

@@ -443,6 +443,76 @@ class SyncGitignore(Kit):
         self.assertIn("Nothing to do", out)
 
 
+class SkillExclusions(Kit):
+    """A repository can opt out of skills via .agents/skills/.agents-kit-ignore."""
+
+    def vendored_pair(self) -> None:
+        self.vendored()
+        self.vendored("other", SHA2, BODY2)
+
+    def ignore(self, r: Path, names: list[str]) -> None:
+        (r / ".agents" / "skills").mkdir(parents=True, exist_ok=True)
+        write(r / ".agents" / "skills" / ".agents-kit-ignore",
+              "# opt-out, one name per line\n\n" + "\n".join(names) + "\n")
+
+    def test_absent_excluded_skill_is_never_installed(self):
+        self.vendored_pair()
+        r = self.repo("r1")
+        self.ignore(r, ["other"])
+        code, out = run("sync", r)
+        self.assertEqual(code, 0, out)
+        self.assertTrue((r / ".agents" / "skills" / "using-x" / "SKILL.md").is_file())
+        self.assertFalse((r / ".agents" / "skills" / "other").exists())
+        self.assertNotIn("other", self.lock(r)["skills"])
+        code, out = run("check", r)
+        self.assertEqual(code, 0, out)
+        self.assertIn("UP TO DATE", out)
+
+    def test_excluded_installed_skill_is_pruned(self):
+        self.vendored_pair()
+        r = self.repo("r2")
+        run("sync", r)
+        self.ignore(r, ["other"])
+        code, out = run("sync", r)
+        self.assertEqual(code, 0, out)
+        self.assertIn("orphan", out)
+        self.assertFalse((r / ".agents" / "skills" / "other").exists())
+        self.assertNotIn("other", self.lock(r)["skills"])
+        code, out = run("sync", r)  # the opt-out is durable: no reinstall
+        self.assertEqual(code, 0, out)
+        self.assertIn("Nothing to do", out)
+        self.assertFalse((r / ".agents" / "skills" / "other").exists())
+
+    def test_explicit_skill_overrides_exclusion(self):
+        self.vendored_pair()
+        r = self.repo("r3")
+        self.ignore(r, ["other"])
+        code, out = run("sync", r, "--skill", "other")
+        self.assertEqual(code, 0, out)
+        self.assertTrue((r / ".agents" / "skills" / "other" / "SKILL.md").is_file())
+
+    def test_comments_blank_lines_and_unknown_names_are_harmless(self):
+        self.vendored_pair()
+        r = self.repo("r4")
+        self.ignore(r, ["not-vendored", "other"])
+        code, out = run("sync", r)
+        self.assertEqual(code, 0, out)
+        self.assertFalse((r / ".agents" / "skills" / "other").exists())
+
+    def test_unmanaged_excluded_folder_is_pruned_without_refusal(self):
+        self.vendored_pair()
+        r = self.repo("r5")
+        run("sync", r)
+        lock_path = r / ".agents" / "skills" / ".agents-kit.json"
+        data = json.loads(lock_path.read_text(encoding="utf-8"))
+        del data["skills"]["other"]  # installed copy without its lock entry
+        write(lock_path, json.dumps(data, indent=2) + "\n")
+        self.ignore(r, ["other"])
+        code, out = run("sync", r)  # no --force: the opt-out prunes, no refusal
+        self.assertEqual(code, 0, out)
+        self.assertFalse((r / ".agents" / "skills" / "other").exists())
+
+
 class Check(Kit):
     def test_exit_codes(self):
         self.vendored()

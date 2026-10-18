@@ -301,6 +301,15 @@
       },
       "license": "MIT"
     },
+    "gpui-kit": {
+      "source": "(authored)",
+      "ref": "2026-10-18",
+      "imported": "2026-10-18",
+      "files": {
+        "SKILL.md": "ce800390a6b41219fd8aaa9e3e225c680f1d5033ccd2663e553d191cf5cbf043"
+      },
+      "license": "MIT"
+    },
     "improve-animations": {
       "source": "emilkowalski/skills",
       "ref": "2d228630ba1446365f614a108cb8252f1feda202",

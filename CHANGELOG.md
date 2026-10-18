@@ -2,6 +2,11 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Tooling — 2026-10-18: gpui-kit skill
+
+- New authored skill: **`gpui-kit`** (MIT) — build cross-platform Rust desktop apps with GPUI Kit (Longbridge's component library on Zed's GPUI engine, shadcn/ui-inspired, 75+ components). Covers the minimal bootstrap recipe with exact Windows prerequisites (VS 2022 Build Tools MSVC + Windows SDK, CMake on PATH, MSVC toolchain not GNU), the "rules that bite" (`init(cx)` before any window, never return a second `Root`, never depend on `gpui`/`gpui-pre` directly, two-layer imports, 0.x API churn — pin the tested version), the component map (virtualized data tables, dock layout, charts, markdown, tree-sitter/LSP editor), semantic-token theming, and a "when to prefer Slint/egui/Tauri" guide.
+- Live-verified on Windows 11 (2026-10-18): `cargo add gpui-kit@0.7.3` + `cargo check` on the official getting-started snippet — exit 0, 798 locked packages, ~50 s cold. Sources: gpui-kit.com docs for v0.7.3 + `llms-full.txt`, plus the upstream repo's own agent skills (`skills/gpui-kit`, `skills/gpui-kit-design-guides` in longbridge/gpui-kit). Fleet deployment pending explicit GO.
+
 ## Tooling — 2026-10-18: MCP fleet management (agent-mcp)
 
 - New kit concern — the machine's **MCP servers** — with the same disciplines as the other three: new stdlib-only CLI `scripts/mcp_agents.py` (Python 3.11+, zero dependency), authored skill `skills/agent-mcp/` (MIT, `NOTICE.md` provenance, byte-identical mirror test-enforced), LF-pinned paths in `.gitattributes`.

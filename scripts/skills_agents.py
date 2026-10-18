@@ -37,7 +37,10 @@ distribution source.
 Installed skills are byte-for-byte copies. The lock fingerprints (sha256) tell an
 updatable install (files match the lock, the kit moved on) from a hand-edited one
 (sync would overwrite local changes). Orphan skills (no longer vendored) are
-pruned by sync. Skill content is external data: review what you vendor.
+pruned by sync. A repository can opt out of specific skills with
+.agents/skills/.agents-kit-ignore (one skill name per line): sync never installs
+them and prunes an installed copy; an explicit --skill bypasses the opt-out.
+Skill content is external data: review what you vendor.
 
 GitHub access uses the standard library only (no npx/Node): tarball download via
 codeload.github.com, commit resolution via api.github.com (unauthenticated:
@@ -115,6 +118,18 @@ ACTION_LABEL = {  # short word per plan action, for the audit details
     "unmanaged": "unmanaged",
     "orphan": "orphan",
 }
+
+
+SKILL_EXCLUDE_FILE = ".agents-kit-ignore"  # per-repo skill opt-out, inside DEPLOY_DIR
+
+
+def read_skill_exclusions(skills_dir: Path) -> set[str]:
+    """Skill names the repository opted out of (one per line, # comments)."""
+    path = skills_dir / SKILL_EXCLUDE_FILE
+    if not path.is_file():
+        return set()
+    names = (ln.strip() for ln in read_text(path).split("\n"))
+    return {n for n in names if n and not n.startswith("#")}
 
 
 def hash_bytes(data: bytes) -> str:
@@ -314,12 +329,20 @@ def plan_repo(repo: Path, registry: dict[str, dict], only: str | None) -> tuple[
         raise InputError(f"UNKNOWN SKILL: {only} (vendored in the kit: {known})")
     skills_dir = repo / DEPLOY_DIR
     lock = load_lock(skills_dir)
+    excluded = read_skill_exclusions(skills_dir)
     plans: list[SkillPlan] = []
     for name in sorted(registry):
         if only is not None and name != only:
             continue
         entry = registry[name]
         target = skills_dir / name
+        if only is None and name in excluded:
+            # Opted out by the repository: never installed; an installed copy is pruned.
+            # An explicit --skill bypasses the exclusion.
+            if lock.get(name) is None and not target.exists():
+                continue
+            plans.append(SkillPlan(name, "orphan", "(excluded by .agents-kit-ignore)"))
+            continue
         installed = fingerprints_of(target) if target.is_dir() else {}
         locked = lock.get(name)
         if locked is None and not target.exists():
@@ -519,7 +542,7 @@ def sync_repo(repo: Path, registry: dict[str, dict], only: str | None, force: bo
             target = skills_dir / p.name
             if target.exists():
                 shutil.rmtree(target)
-            del lock[p.name]
+            lock.pop(p.name, None)  # excluded unmanaged installs have no lock entry
             continue
         apply_plan(skills_dir, p, registry[p.name])
         lock[p.name] = {"source": registry[p.name]["source"], "ref": registry[p.name]["ref"],

@@ -7,6 +7,10 @@ Versions of the **common block** (`agents-common.md`, fingerprints in `agents-co
 - §2 policy flip: the ledger database is **local-only** — `.agent/` (state database, legacy backups) and `.agents/` (installed skill copies) are git-ignored from initialization and never committed (a heavy binary and installed scripts would bloat public GitHub repositories and skew their language statistics). The on-disk state remains the source of truth; only its git carriage changes.
 - **Fleet migration (one-time per repository)**: if `.agent/` or `.agents/` were committed before, untrack them without touching the disk — `git rm -r --cached .agent .agents`, commit, push. `sync_agents.py init` and `skills_agents.py sync` now pin both entries in the target `.gitignore` automatically (runbook in `docs/MIGRATION.md`).
 
+## Tooling — 2026-10-18: per-repo skill opt-out
+
+- `skills sync`/`check`/`deploy`/`audit` respect a per-repository opt-out file, `<repo>/.agents/skills/.agents-kit-ignore` (one skill name per line, `#` comments — same idiom as the fleet-root repository exclusions): an opted-out skill is never installed and an installed copy is pruned as an orphan (no `--force` needed, no refusal for an unmanaged copy). An explicit `--skill <name>` bypasses the opt-out. Motivation: curate relevance (the 15 design/animation skills from emilkowalski are useless in backend/infra repositories) without forking the registry.
+
 ## Tooling — 2026-10-18: local-only .gitignore enforcement
 
 - `sync_agents.py init` writes or extends the target `.gitignore` with `.agent/` + `.agents/` (idempotent, existing content preserved, refusal paths write nothing).

@@ -114,6 +114,7 @@ def find_chrome(
     platform: str,
     extra_paths: list[str] | None = None,
     which=shutil.which,
+    isfile=os.path.isfile,
 ) -> str | None:
     """Chrome resolution order: --chrome, CHROME_PATH, PLAYWRIGHT_CHROME,
     standard install paths, PATH lookup."""
@@ -122,7 +123,7 @@ def find_chrome(
     candidates += standard_chrome_paths(platform, env)
     candidates += extra_paths or []
     for path in candidates:
-        if path and os.path.isfile(path):
+        if path and isfile(path):
             return path
     for name in CHROME_WHICH_NAMES:
         found = which(name)
@@ -151,6 +152,7 @@ def check_everything(
     runner=subprocess.run,
     which=shutil.which,
     chrome_paths: list[str] | None = None,
+    isfile=os.path.isfile,
 ) -> tuple[bool, dict[str, dict[str, str]]]:
     """Probe every tool. Returns (all_required_ok, {tool: status/detail/hint})."""
     env = dict(env if env is not None else os.environ)
@@ -172,7 +174,7 @@ def check_everything(
         "hint": HINT_PYLIBS,
     }
 
-    chrome = find_chrome(chrome_override, env, platform, chrome_paths, which)
+    chrome = find_chrome(chrome_override, env, platform, chrome_paths, which, isfile)
     tools["chrome"] = {"status": "ok" if chrome else "missing",
                        "detail": chrome or "no Chrome executable found", "hint": HINT_CHROME}
 

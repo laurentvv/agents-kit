@@ -77,20 +77,27 @@ class EnvGet(unittest.TestCase):
 
 
 class ChromeResolution(unittest.TestCase):
+    def setUp(self):
+        # Hermetic filesystem: standard Linux/macOS Chrome paths may EXIST on a
+        # real machine (GitHub Ubuntu runners ship /usr/bin/google-chrome), so
+        # every existence probe goes through this fake.
+        self.exists: set[str] = set()
+        self.isfile = lambda p: p in self.exists
+
     def test_order_override_env_extra(self):
         with tempfile.TemporaryDirectory() as tmp:
             fake = Path(tmp) / "chrome.exe"
-            fake.write_bytes(b"x")
             other = Path(tmp) / "never.exe"
-            other.write_bytes(b"x")
+            self.exists |= {str(fake), str(other)}
             env = {"CHROME_PATH": str(fake), "PLAYWRIGHT_CHROME": str(other)}
-            self.assertEqual(vt.find_chrome(None, env, "win32"), str(fake))
-            self.assertEqual(vt.find_chrome(str(other), env, "win32"), str(other))
+            self.assertEqual(vt.find_chrome(None, env, "win32", isfile=self.isfile), str(fake))
+            self.assertEqual(vt.find_chrome(str(other), env, "win32", isfile=self.isfile), str(other))
             env2 = {"PLAYWRIGHT_CHROME": str(other)}
-            self.assertEqual(vt.find_chrome(None, env2, "win32"), str(other))
+            self.assertEqual(vt.find_chrome(None, env2, "win32", isfile=self.isfile), str(other))
             # no env hit: extra paths (standard-path injection point) win over PATH
             self.assertEqual(
-                vt.find_chrome(None, {}, "linux", extra_paths=[str(fake)], which=lambda n: str(other)),
+                vt.find_chrome(None, {}, "linux", extra_paths=[str(fake)],
+                               which=lambda n: str(other), isfile=self.isfile),
                 str(fake),
             )
 
@@ -104,12 +111,12 @@ class ChromeResolution(unittest.TestCase):
     def test_path_lookup_last(self):
         with tempfile.TemporaryDirectory() as tmp:
             fake = Path(tmp) / "chromium"
-            fake.write_bytes(b"x")
-            found = vt.find_chrome(None, {}, "linux", which=lambda n: str(fake) if n == "chromium" else None)
+            found = vt.find_chrome(None, {}, "linux", which=lambda n: str(fake) if n == "chromium" else None,
+                                   isfile=self.isfile)
             self.assertEqual(found, str(fake))
 
     def test_missing(self):
-        self.assertIsNone(vt.find_chrome(None, {}, "linux", which=lambda n: None))
+        self.assertIsNone(vt.find_chrome(None, {}, "linux", which=lambda n: None, isfile=self.isfile))
 
 
 class PythonCandidates(unittest.TestCase):
@@ -138,6 +145,8 @@ class CheckEverything(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.tmp, True)
         self.chrome = Path(self.tmp) / "chrome.exe"
         self.chrome.write_bytes(b"x")
+        # only the temporary chrome "exists" - never the machine's real paths
+        self.isfile = lambda p: p == str(self.chrome)
 
     def all_ok_runner(self):
         return FakeRunner({
@@ -154,6 +163,7 @@ class CheckEverything(unittest.TestCase):
             runner=runner or self.all_ok_runner(),
             env=env if env is not None else {},
             which=kwargs.pop("which", lambda n: "/bin/" + n),
+            isfile=self.isfile,
             **kwargs,
         )
 
@@ -190,6 +200,7 @@ class OutputAndMain(unittest.TestCase):
             runner=FakeRunner({"node": "v1", "ffmpeg": "f", "uv run": "n/p", "python": "n/p"}),
             env={},
             which=lambda n: None,
+            isfile=lambda p: False,
             **kwargs,
         )
 
@@ -222,8 +233,9 @@ class OutputAndMain(unittest.TestCase):
                 (good, lambda n: "/bin/" + n, 0, ["--chrome", str(chrome)], "OK"),
                 (bad, lambda n: None, 1, ["--json"], '"ok": false'),
             ):
-                def injected(*a, runner=runner, which=which, **k):
-                    return real_check(*a, runner=runner, env={}, which=which, **k)
+                def injected(*a, runner=runner, which=which, chrome=chrome, **k):
+                    return real_check(*a, runner=runner, env={}, which=which,
+                                      isfile=lambda p: p == str(chrome), **k)
 
                 with mock.patch.object(vt, "check_everything", side_effect=injected):
                     buffer = io.StringIO()

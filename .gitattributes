@@ -4,6 +4,23 @@ scripts/** text eol=lf
 .agents/skills/** text eol=lf
 .agent/*.duckdb* binary
 
+# Binary assets inside vendored skills: never line-convert them (lesson 2026-10-19,
+# first vendored skill shipping jpg/gif - a forced eol=lf would corrupt the blobs
+# and break the byte-strict fingerprints on a fresh clone)
+*.jpg -text
+*.jpeg -text
+*.png -text
+*.gif -text
+*.webp -text
+*.mp4 -text
+*.mp3 -text
+*.wav -text
+*.m4a -text
+*.woff -text
+*.woff2 -text
+*.ttf -text
+*.otf -text
+
 # Templates are canon material: byte-stable across checkouts (lesson 2026-10-18)
 template/** text eol=lf
 skills.json text eol=lf

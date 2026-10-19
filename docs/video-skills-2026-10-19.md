@@ -16,10 +16,58 @@ prerequisite gate shipped with them. Live render evidence comes from the
 | JohnHeibel/ClaudeAnimationBase | **SKIP** (absorbed) | Already bundled as `painted-animation/template/` with its MIT license kept; nothing left to vendor | `0ac8bf2b31942376cb6b8c4074715595d512acd2` | MIT |
 | makevoid/motion-graphics-music-video-skill | **SKIP** (reference) | Ruby 3.2+ only entry layer (not installed on the fleet machine), paid Fal API behind `FAL_AI_API_KEY`, Swift VFX stage needs macOS 14+ | `75aafbe3a986cda3a56ce4d046da0d558fc10983` | MIT |
 | diggerhq/shipvideo | **SKIP** (reference) | No license — no code may be copied; requires an OpenComputer agent, not a skill | `53d7c6f752fb85b449de8cf806b77ad21808a8f1` | none |
+| dgreenheck/tidewater | **REFERENCE only** | A WebGPU game demo (fishing, Vite 8, ~51 MB), not a skill — architecture and docs inspiration for WebGPU games; never vendored | `4811ba48d795197de5621985f404e765c0b7c0ef` | MIT (CREDITS.md lists third-party assets — check before reusing) |
+| riba2534/claude-opus-5-5-demo | **REFERENCE only** | Three one-prompt game demos (pelican-bike, qq-speed, cf-transport-ship; three.js + esbuild single-file HTML) — prompts kept as README facts, no code copied (no license) | `54adc1fb64155f9dd7c1c90ecae7b8185ac540b8` | none (all rights reserved — never copy code) |
 
 Reference-only (prompts and inspiration, never code): JohnHeibel/PDoomVideo (no
-license), the awesome-opus5-5-videos lists (yihui-dev, athemeroy, BeatAPI),
-tidewater, claude-opus-5-5-demo (no license).
+license), the awesome-opus5-5-videos lists (yihui-dev, athemeroy, BeatAPI).
+
+## Second test round — the two game-demo repositories (2026-10-19)
+
+Both are **games, not skills**: no SKILL.md, no agent workflow to vendor. They
+stay reference entries — architecture, docs and prompts only.
+
+### dgreenheck/tidewater (MIT, reference only)
+
+- Verified (2026-10-19, Windows 11, Node 24): `npm install` OK; `npm test`
+  passes (game-logic + engine smoke: 12 draws, 7386 triangles, 8 pipelines);
+  `npx vite --host 127.0.0.1 --port 5189` starts in ~0.2 s and the page loads
+  with `navigator.gpu` present and a real adapter.
+- Not verified: actual gameplay. First launch compiles shaders and shows a
+  loading screen that can take 1-2 minutes.
+- Caution: needs a WebGPU-capable browser/GPU; `CREDITS.md` lists third-party
+  assets — check them before reusing anything from the repo.
+
+### riba2534/claude-opus-5-5-demo (no license, reference only)
+
+- Three one-prompt games (pelican-bike, qq-speed, cf-transport-ship; three.js,
+  esbuild single-file HTML, deployed on Cloudflare Pages); the README documents
+  the original one-sentence prompts — those are facts about the repo and may be
+  kept as inspiration with the source URL. **No license file: all rights
+  reserved — code is never copied into the kit.**
+- Verified for pelican-bike only: builds and runs, title screen renders, no
+  console errors. qq-speed was not tested. cf-transport-ship has the same
+  lockfile problem as pelican-bike.
+- **Lockfile registry trap**: the committed `package-lock.json` files point at
+  an internal registry (bnpm.byted.org), so a plain `npm install` fails with
+  ENOTFOUND. Workaround: `npm install --no-package-lock` (or delete the
+  lockfile first). pelican-bike also needs esbuild — present in its
+  dependencies, but the build fails until the install itself succeeds.
+
+### Generic rule — check the lockfile before any third-party `npm install`
+
+Before running `npm install` on a third-party repository, grep its lockfile for
+non-npmjs registries:
+
+```bash
+grep -l '"resolved"' package-lock.json | xargs grep -L registry.npmjs.org
+```
+
+If the lockfile resolves against anything else (an internal mirror, a proxy
+that this machine cannot reach), install with `--no-package-lock` (or remove
+the lockfile) instead of fighting ENOTFOUND errors — the dependency graph is
+still resolved from `package.json`, only the pinned URLs are ignored. Recorded
+as a dated lesson in the kit's AGENTS.md §7.
 
 ## SKILL.md audit (frontmatter, triggers, instruction risks)
 

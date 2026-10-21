@@ -335,6 +335,165 @@
       "license": "Apache-2.0",
       "updated": "2026-10-16"
     },
+    "godot-2d-movement": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "e8089e2a10ef2e836d6a1c858a716697a23f1060b6243e50b526da27fc653fb4",
+        "references/controller-recipes.md": "d6418b2c84f45263e01df3410f65c57100249d9aef2ca47fc760fd24fff402da"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-3d-essentials": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "e2358689bf656964f3a388baf1c224dc3be2b8de460db8ac8bb1e5bf0b0a4fe8",
+        "references/scene-and-environment.md": "b4de6267588f540baa7e4fa149fd4653ace4324e1b17b7655d0f6551a735b428"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-animation": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "9d32ef721eaa227494180b6ffb0208624a76e93217a2e39c2286eb0b5701e8e5",
+        "references/animation-tree-and-tween.md": "455ef0e15357428f250035fd5b0c587500b9d565f3bbcc33f95f378a986380a6"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-audio": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "b75829c3c47539f4e1fa2b623ebfce6fa4f5eef2ddc950d00265c27cfae2e0db",
+        "references/buses-and-effects.md": "da6a33ae46b21f3526e74c5e383781e02f1f6ca0bd755475b21e14f124a52526"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-csharp": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "c6d30a274621c63ab20ce2153807fd173987d1eccd06acfbe6a8a9f26a28c819",
+        "references/csharp-setup-and-interop.md": "086f7bc8549d61ae96190643e9a574f666fd7ed3b04eb18ec10430f89984211d"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-export": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "e97f0a889b8e06934aced7fdcee667d5bb848e33bc44d500c92f580e60295305",
+        "references/presets-and-cli.md": "ddb73ed10a107d806e883a1d13c6a78377226223d57b536201dda9c97505ae62"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-gdscript": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "b2625f5651fc9373e057ea47b5e2372319c4ed027fffc958f8a91d25cdea5a39",
+        "references/annotations-and-typing.md": "f1cea898e0346be3fac816093b577b30ef0f112d83cc2c1472c44d4a936700b3"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-gdscript-headless-testing": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "556b63c125cd01864411a07a7d9c067b5b5df26db9cd60c745edf871edabb47e"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-multiplayer": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "43b2f2725ab1f0565dfc132a203de75fc99f6e722f2a0dad78ca5026f0fdae44",
+        "references/replication-and-rpc.md": "51e58312b2532f5bbb8223e0bc1e1a5bdc145f6b3140c393a263cdbdc323b34c"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-nodes-scenes": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "27beea0d3994e6bc502f9dc3fb6089afcdc083e41790a4cf6a7d32314e079e3d",
+        "references/tree-and-instancing.md": "be3c86180bd18dd46bfdfd7a47317bdb50fc6942cfc3e3d7342b4d0f7834b7a4"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-physics": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "53310957617465653c838309851bad09b12a051e6aeef2a2b307f11d9e75062b",
+        "references/bodies-and-queries.md": "64f6bdd613b92607cfbf0d3be0b88172d2e6c5b9cfd353706740833fd1343160"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-resources": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "c44678e5ce98171d21fb6899f8e7e3983f5599a98e45b3c24bb80a19468e44ab",
+        "references/resource-patterns.md": "f0474f71c843c4c9cfd05609129984a4facf3444a764b2c71f24f066a51dbbb9"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-shaders": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "15bf46f7b0af586f026c1bb58beaeba2579009b70398f43859b7ab286a45e63e",
+        "references/shading-language.md": "582b146d8d47b61d80eb8def8e48923d87ef1c7964542f0a12e9e05645c517e9"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-signals-groups": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "bf1ff3e6b84b63da7ee1749d296722d416f9bb6436b6c2ee9418d33fbfc135c0",
+        "references/signal-patterns.md": "837c192a07fbd0239ed30a68570ef6a1782f6ad03fe7298c7cbe580b34fb3c17"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-tilemap": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "2b29349a728e0b708b5090d99372892597bfe37df6d071211ca8fb1cd15c46d5",
+        "references/tileset-and-terrains.md": "c2486c7bacdd3f099d981f50b1aa881a7647bb14112b343370f76e1753d12ed8"
+      },
+      "license": "Apache-2.0"
+    },
+    "godot-ui-control": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "9ac89920e74bbf8d939b4d565e350d53b07c9afbe0970345c97d4122f590cfd5",
+        "references/layout-and-theming.md": "2b5a7d64f00709640385adda215aa3f9a839c2d461c53c886ba9c320723a9f3d"
+      },
+      "license": "Apache-2.0"
+    },
     "good-css": {
       "source": "vojtaholik/good-css",
       "ref": "92d436ba1937d1b1407c47e35abb3e199eaace2e",
@@ -566,6 +725,96 @@
         "STANDARDS.md": "e7d3605034acda54ca13e43aec9e64d65b53de20f75b11b8d694e373012fbe07"
       },
       "license": "MIT"
+    },
+    "roblox-characters": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "f3eb428069a2d0c099cfd7fc7454ea1ece3a56cca296d5758925886adeb7a92f",
+        "agents/openai.yaml": "d206f4538baeb195e01d29cc53ea712948e6820c3c6539f7f2e2cce6656b8885",
+        "references/lifecycle-and-animation.md": "ecee2fe0dc55245ef94861d68852bbdb5c7de09eb2cb2c60e5e37295c3cfbed0"
+      },
+      "license": "Apache-2.0"
+    },
+    "roblox-datastores": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "b64a11db8cee8b03c59a86ee197a152c4b0a368148db1fdf474bd10eb6890c52",
+        "references/sessions-and-limits.md": "0fd8bbd8ae9369adb48e2a2ee864fbe29c8ef9ff90e5dfdd22ccd88851c18d84"
+      },
+      "license": "Apache-2.0"
+    },
+    "roblox-luau": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "6cefbf1ae6a57876a814bf94b9966b5a0afed1e80e192745e532c536e0ae3271",
+        "references/client-server.md": "cbb013ca65789073687cb2ded9fb4045b5dc4a92af9afd1d535dcb2a46327c05"
+      },
+      "license": "Apache-2.0"
+    },
+    "roblox-networking": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "4bf929dab25bde30851ddb1eb1831ee881c1491a871248c45351a513fa453849",
+        "agents/openai.yaml": "b3f530519ed19704b115584ded1842ca430fef1650fa873694c4d9cfc7e29401",
+        "references/validation-and-testing.md": "b76848087b7adf6b68da7feb01a522515f909bd062cf9247cf44aafaab93225b"
+      },
+      "license": "Apache-2.0"
+    },
+    "roblox-physics": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "b91d88793183b61eb80b60baa07f42c504fbbc21de344f372e85eb448e9f3044",
+        "agents/openai.yaml": "55b06a72b4e88c5ec5a4c9d7c3a9684849b6362545d97c8703e79a22120500bf",
+        "references/queries-and-ownership.md": "67eca1dd85cc27b3443f409c10458c7157e9bb9428378126f8a784e875b66408"
+      },
+      "license": "Apache-2.0"
+    },
+    "roblox-studio-workflow": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "77aa202a728504301413ee98b766d4ae42f91baa7b4d429d319e98dc99f97a4d",
+        "agents/openai.yaml": "34f2fe7716ef36610d0a577e05bdcfb36cbaaa25da23a159ee9c02a2d248c7d3",
+        "references/studio-verification.md": "ddf0c896eedc6c351ec9f6e5293db20c7e7b3053342101a5eda344b890bbd5e0"
+      },
+      "license": "Apache-2.0"
+    },
+    "roblox-ui": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "c03198cd4283325073d5b07d8655f4eaa1933e3e2b1c69fb75945dd09ee8baea",
+        "agents/openai.yaml": "4c67a26a3054126e21db6fb6f893135944a8ca0fac9d619506e867b989073ded",
+        "assets/inventory-quality-test.model.json": "8f503559cc63a6620cf0fcf3fcf8ab434a5cabde90367c85d7dc50ed748ee11c",
+        "assets/inventory-quality-test.project.json": "ab2388eefb502d3e9e165aadc55aba09841940c757ad6d06048e4a8fcdfa0348",
+        "references/input-navigation.md": "ab8f0d12eb1586c84b686ca02bf46f829880b2f87ec4e52cbd30c7213ab19dcb",
+        "references/responsive-layout.md": "8fb38261a9cb00d996cba524bdd9af203f854259f455765aeb1de58d88048ddb"
+      },
+      "license": "Apache-2.0"
+    },
+    "router": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "ref": "0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd",
+      "imported": "2026-10-21",
+      "files": {
+        "SKILL.md": "548b9c354f4bc152607b4f00f575f40786d28be92d1f4354c8802437f958488e",
+        "agents/openai.yaml": "1304cad1da9611f8cf73ffb122bf7628b0fd6f0cce5a9f9072cd3fbdbe9ce128",
+        "references/engine-detection.md": "bec78e9d9366f0d30ba4dae228da12d42e4e5cf09f8824ba3d572a6eb49dd448",
+        "references/routing-table.md": "2aa407f131d76145c00c1e31343dd6c57a343a6cad3637698e40d20f689f9266"
+      },
+      "license": "Apache-2.0"
     },
     "rust-best-practices": {
       "source": "apollographql/skills",

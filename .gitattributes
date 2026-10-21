@@ -24,3 +24,7 @@ scripts/** text eol=lf
 # Templates are canon material: byte-stable across checkouts (lesson 2026-10-18)
 template/** text eol=lf
 skills.json text eol=lf
+
+# Vendored upstream notices: byte-stable verbatim copies (same discipline as
+# skills.json - a CRLF smudge on checkout would break the verbatim claim)
+docs/upstream-notices/** text eol=lf

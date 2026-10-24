@@ -2,6 +2,11 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Common block v3.2 — 2026-10-24
+
+- §4 gains three **GitHub delivery rules** for agent-driven work, complementary to the existing branch/stop/push rules: **PRs stay small and deterministic** (one PR = one self-contained change — declared scope, no drive-by edits, green tests, a diff reviewable in one pass and rebuildable from the branch alone); **agents review the PRs** (an orchestrator agent dispatches review agents over every submitted PR — diff + checklist — and their findings are folded back into the branch before human review); **stacked delivery on long arcs** (long work is cut into a series of small end-to-end PRs, each green and mergeable on its own and stacked on the previous one — never one long-lived branch piling up unreviewed work).
+- **What changes for the fleet**: nothing breaks — repositories simply report "behind (v3.1, canon v3.2)" until resynced (`sync_agents.py sync`). The rules bind agent behavior on every future PR, in every fleet repository; no migration, no file to touch besides the block itself.
+
 ## Tooling — 2026-10-22: weekly skills refresh
 
 - First run of the weekly update cycle (dry-run → upstream review → re-pin/refresh): **2 content updates + 27 re-pins (content identical), 0 refused**. Content updates, both from `gamedev-skills/awesome-gamedev-agent-skills` (`0a70cfc6` → `38a4c2500eeb`): **`godot-nodes-scenes`** gains a self-contained reference checker (`scripts/check_godot_project.py`, 1262 lines, stdlib-only — argparse/json/os/posixpath/re/struct/sys; no network, no subprocess, no machine paths; read-only validation of `res://` paths, Ext/SubResource ids, `parent=` paths, main scene + autoloads; Python 3.10+) plus the matching SKILL.md rule; **`roblox-luau`** gains a static-checks SKILL.md rule (selene with `std = "roblox"`, luau-lsp analyze over a Rojo sourcemap). Review before update (§5/§6): tarball diffed against the vendored copies, upstream NOTICE verbatim-identical to `docs/upstream-notices/`, Apache-2.0 unchanged, no binaries.

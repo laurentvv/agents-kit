@@ -247,22 +247,24 @@ def extract_skill(data: bytes, name: str | None) -> tuple[str, dict[str, bytes]]
             candidates: dict[str, str] = {}  # skill folder (after the top dir) -> SKILL.md member
             for m in tar.getmembers():
                 parts = m.name.split("/")
-                if m.isfile() and len(parts) >= 3 and parts[-1] == SKILL_MARKER:
-                    candidates["/".join(parts[1:-1])] = m.name
+                if m.isfile() and len(parts) >= 2 and parts[-1] == SKILL_MARKER:
+                    candidates["/".join(parts[1:-1])] = m.name  # "" = skill at the repository root
             if name is None:
-                if len(candidates) == 1:
+                if len(candidates) == 1 and "" not in candidates:
                     name = next(iter(candidates)).split("/")[-1]
                 else:
-                    known = ", ".join(sorted(candidates)) or "none found"
+                    known = ", ".join(sorted(f or "(repository root)" for f in candidates)) or "none found"
                     raise InputError(f"NO SKILL SELECTED: pass --skill NAME (candidates: {known})")
-            folder = next((f for f in candidates if f.split("/")[-1] == name), None)
+            folder = next((f for f in candidates if f and f.split("/")[-1] == name), None)
+            if folder is None and "" in candidates and len(candidates) == 1:
+                folder = ""  # root skill: the installed name comes from --skill
             if folder is None:
                 known = ", ".join(sorted(candidates)) or "none found"
                 raise InputError(f"SKILL NOT FOUND: no {SKILL_MARKER} under a folder named {name}"
                                  f" (candidates: {known})")
             if NAME_RE.fullmatch(name) is None:
                 raise InputError(f"INVALID SKILL NAME: {name} (letters, digits, dot, dash, underscore)")
-            prefix = folder + "/"
+            prefix = folder + "/" if folder else ""
             for m in tar.getmembers():
                 _top, sep, rel = m.name.partition("/")
                 if not sep or not rel.startswith(prefix):

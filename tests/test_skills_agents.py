@@ -159,6 +159,24 @@ class Add(Kit):
         self.assertIn("NO SKILL SELECTED", out)
         self.assertIn("other", out)
 
+    def test_skill_at_repository_root(self):
+        buf = io.BytesIO()
+        with tarfile.open(fileobj=buf, mode="w:gz") as tar:
+            for rel, data in (("SKILL.md", BODY1), ("references/a.md", b"a\n"),
+                             ("LICENSE", b"MIT License\n")):
+                info = tarfile.TarInfo(f"repo-main/{rel}")
+                info.size = len(data)
+                tar.addfile(info, io.BytesIO(data))
+        self.github(tarball=buf.getvalue())
+        code, out = run("add", "https://github.com/acme/root-skill")
+        self.assertEqual(code, 2)  # the installed name cannot be guessed from a root folder
+        self.assertIn("(repository root)", out)
+        code, out = run("add", "https://github.com/acme/root-skill", "--skill", "root-skill")
+        self.assertEqual(code, 0, out)
+        folder = sa.SKILLS_DIR / "root-skill"
+        self.assertEqual((folder / "SKILL.md").read_bytes(), BODY1)
+        self.assertEqual((folder / "references" / "a.md").read_bytes(), b"a\n")
+
     def test_same_content_is_idempotent(self):
         self.vendored()
         self.github()  # same sha, same content

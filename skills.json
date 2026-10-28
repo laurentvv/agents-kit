@@ -602,6 +602,18 @@
       },
       "license": "MIT"
     },
+    "llm-evals": {
+      "source": "(authored)",
+      "ref": "2026-10-28",
+      "imported": "2026-10-28",
+      "files": {
+        "references/deepeval.md": "2923b1c6f1466d2537f50d006ede6cc87d303a80b56370f3b511e2b1c4ac74dd",
+        "references/inspect-ai.md": "ac821dfc1b0eec2720fbfe6cd5bca4ede9aa6d4687b3f313a6844dab08c63e26",
+        "references/promptfoo.md": "5348a86d6a82cd941d0891ac659233d3c8e76bc42d8caa6ddea05af4dff0a11b",
+        "SKILL.md": "37be2c7aa626f28863efaa6bb7620bf602f9e2852af60aba43632254ecbb88f5"
+      },
+      "license": "MIT"
+    },
     "minimal-change-engineer": {
       "source": "(authored)",
       "ref": "2026-10-11",

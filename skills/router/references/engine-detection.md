@@ -2,7 +2,8 @@
 
 The router body carries the primary signal per engine; this file holds the **complete**
 fingerprint table, the disambiguation rules, and the secondary signals. Detection is
-**exclusive**: pick exactly one engine skill set (or "unknown" and use the fallback).
+**exclusive**: identify one engine for the target project. A custom/proprietary engine can be
+known without a catalog skill; use the router's custom-engine fallback in that case.
 
 Scan for the highest-confidence signal and stop at the first match in this precedence order.
 
@@ -66,6 +67,10 @@ preserve the detected version unless the user explicitly requests migration.
   file or subdirectory the request is about. If still ambiguous, ask one targeted question.
 - **No engine files at all** — go to the unknown-engine fallback (router body §6). Many
   discipline / genre / workflow tasks need no engine at all.
+- **Custom/proprietary engine** — inspect the named engine's build files, runtime entry point,
+  local SDK/docs and examples. A generic CMake project, `.csproj`, Lua file, or bundled renderer
+  alone does not establish a catalog engine. Preserve the existing engine; record its revision
+  from build metadata or local documentation and use `custom-engines.md` for API bindings.
 
 ## Plain-text engine mentions
 

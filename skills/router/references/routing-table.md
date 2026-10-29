@@ -84,6 +84,7 @@ a real folder at `skills/<category>/<name>/SKILL.md`. Trigger words (`says:`) an
 | `roblox-characters` | Roblox character/respawn/rig/movement/animation, `CharacterAdded`, `Humanoid`, `Animator`, R6/R15, Tool, stale character reference |
 | `roblox-physics` | Roblox assembly/constraint/collision/query/ownership, `RaycastParams`, overlap, `CanQuery`, impulse, BodyMover, projectile/vehicle/knockback |
 | `roblox-studio-workflow` | edit/inspect/test a Roblox place in Studio, Explorer, Script/LocalScript/ModuleScript placement, tags/Attributes, duplicate remotes/systems, Server & Clients, Output |
+| `roblox-simulator-economy` | Roblox simulator/tycoon/clicker/idle economy, upgrade cost curve, `costGrowth`, buy max, income per second, rebirth/prestige requirement or multiplier, offline earnings, big-number suffixes (K/M/B/Qa), "1000K" display bug, currency exploit, save repair, paid eggs/crates/spins odds, `PolicyService` paid random items; pairs with `roblox-networking` + `roblox-datastores` |
 
 ## Disciplines (`skills/disciplines/`) — cross-engine concepts, load **with** the engine skill
 
@@ -109,7 +110,7 @@ a real folder at `skills/<category>/<name>/SKILL.md`. Trigger words (`says:`) an
 
 | Genre skill | `says:` triggers | composes (bind `*` to the detected engine) |
 |-------------|------------------|---------------------------------------------|
-| `platformer` | platformer, jump mechanic, double jump, Mario-like | `godot-2d-movement` (or engine physics) + `godot-tilemap`/`unity-tilemap-2d` + `level-design` + `camera-systems` + `game-feel` |
+| `platformer` | platformer, jump mechanic, double jump, wall jump, wall slide, Mario-like | `godot-2d-movement` (or engine physics) + `godot-tilemap`/`unity-tilemap-2d` + `level-design` + `camera-systems` + `game-feel` |
 | `roguelike` | roguelike, procedural dungeon, permadeath, turn-based grid | `procedural-gen` + `godot-tilemap`/`unity-tilemap-2d` + `game-ai` + `save-systems` + `game-feel` |
 | `rpg` | RPG, stats/leveling, inventory, quest system | `godot-resources`/`unity-scriptableobjects` + `dialogue-systems` + `save-systems` + `game-ui-ux` |
 | `fps-shooter` | FPS, first-person shooter, hitscan, aim/shoot | `godot-3d-essentials`/`unreal-cpp-gameplay` + `input-systems` + `game-ai` + `camera-systems` + `game-feel` |
@@ -129,6 +130,11 @@ a real folder at `skills/<category>/<name>/SKILL.md`. Trigger words (`says:`) an
 | `itch-publish` | publish on itch, itch.io page, `butler push`, upload build; `.itch.toml` |
 
 ## Binding gaps (be honest; do not fabricate a skill)
+
+For a **custom, proprietary, in-house, or unsupported engine**, keep the engine and use the
+router's `custom-engines.md` reference. Load the relevant genre/discipline skills; replace
+catalog engine bindings with verified project APIs. Engine-specific names in composition
+tables are examples, not mandatory dependencies for portable genre systems.
 
 The collection does not yet have a skill for every engine × concept. Several cross-cutting
 concerns are now covered **engine-neutrally** by disciplines that pair with any detected engine —

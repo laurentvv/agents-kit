@@ -96,24 +96,25 @@
     },
     "blender-core": {
       "source": "EL4CTEO/blender-skills",
-      "ref": "71d031dab8bc6729504d11a78cbe91945401045f",
+      "ref": "fb92cfb4cc5a238c22113a6a230b09f535bd0656",
       "imported": "2026-10-18",
       "files": {
-        "SKILL.md": "92ab591e713d8b4cdd3ed591c813ad29df9f7ce3f90f6e84971719a6b1bdc51d",
-        "references/api-changes-5x.md": "ccf0b52a1d9fd836eb689abcec6a878b0ac57fb32ac600476b5070b9c8d22307",
+        "SKILL.md": "91588e225931c2df924819d02a7b9ca896568f0e4d458a09364b1611b709527f",
+        "references/api-changes-5x.md": "adc6abbff9aa0d57158805aaabf63cff3088779eb0a957253dfea1247f08bcaa",
         "references/bpy-patterns.md": "ba7bbc708bf198bdcdfa59d9d41d830a4ae119c24ae9457830b73d9e818e2af8",
         "scripts/_bpyx.py": "a3339ba8a678469e8ed29510e32a7331e0235202191ca4edb977af4720819b4b",
         "scripts/env_report.py": "e628feed806dd265e0c1ce803d92591aac208a9f463d8c47cbb939476d3b347a",
         "scripts/run_in_blender.py": "e97e078c1b52475d386af2b8f9d27c7578a55c250ccd43ff50bed9c33d380355"
       },
-      "license": "MIT"
+      "license": "MIT",
+      "updated": "2026-10-30"
     },
     "blender-export-pipelines": {
       "source": "EL4CTEO/blender-skills",
-      "ref": "71d031dab8bc6729504d11a78cbe91945401045f",
+      "ref": "fb92cfb4cc5a238c22113a6a230b09f535bd0656",
       "imported": "2026-10-18",
       "files": {
-        "SKILL.md": "b118b488f99bd5a2c45572bc78d76cb14cb6884d6fc00f8a7112a7b18f35896e",
+        "SKILL.md": "ed22458c62a4e09be4307d70085ff87dc171c7cd703199312474d6fe4f91d092",
         "references/godot-web.md": "a1de232e3abb1622968f7d531dc6d62aa5a5a7b6d4b97e0b18dd16dc52d6ff30",
         "references/roblox.md": "9079cd534349ce5ea0034abd983cf849a19c0a08676b88486393fe8caab7e263",
         "references/unity.md": "6ed7fbaa57f6d8d0bdf87438bfc442bb536465b05459ffebf72b75dfa238d080",
@@ -121,29 +122,32 @@
         "scripts/_bpyx.py": "a3339ba8a678469e8ed29510e32a7331e0235202191ca4edb977af4720819b4b",
         "scripts/export_asset.py": "d30989025a2b06ed7f2241fd64b17aa1e554a92bf9178f601285ce78cc9d9760"
       },
-      "license": "MIT"
+      "license": "MIT",
+      "updated": "2026-10-30"
     },
     "blender-pipeline-automation": {
       "source": "EL4CTEO/blender-skills",
-      "ref": "71d031dab8bc6729504d11a78cbe91945401045f",
+      "ref": "fb92cfb4cc5a238c22113a6a230b09f535bd0656",
       "imported": "2026-10-18",
       "files": {
-        "SKILL.md": "590e1159205c68af5c338425456c3ff86837cdb8202e34f2d40a018e96ec79fa",
+        "SKILL.md": "1a9b4af73856ca95bc0e1a84c0c4331faa22ee82952c6ad36242a0ec7125dc58",
         "scripts/_bpyx.py": "a3339ba8a678469e8ed29510e32a7331e0235202191ca4edb977af4720819b4b",
         "scripts/batch_process.py": "baedf17711a939981f3796879e1f32be3203c197c41d9dc3fad8a104b82bfe8e"
       },
-      "license": "MIT"
+      "license": "MIT",
+      "updated": "2026-10-30"
     },
     "blender-rendering": {
       "source": "EL4CTEO/blender-skills",
-      "ref": "71d031dab8bc6729504d11a78cbe91945401045f",
+      "ref": "fb92cfb4cc5a238c22113a6a230b09f535bd0656",
       "imported": "2026-10-18",
       "files": {
-        "SKILL.md": "ea4c7616fc1559cf8f1838e5e1cd6d49ff3c13fe716af3d8bd7aeca5877eeb45",
+        "SKILL.md": "6e98d9533699d754266c6965070ca9e01c37ba6294f4e7bc0ac238cd2912af8b",
         "scripts/_bpyx.py": "a3339ba8a678469e8ed29510e32a7331e0235202191ca4edb977af4720819b4b",
         "scripts/render_batch.py": "2ee9043b297148b9d76b54fc22390e1e6062e2e27c33ab0386dcfa2fdb59c432"
       },
-      "license": "MIT"
+      "license": "MIT",
+      "updated": "2026-10-30"
     },
     "break-ui": {
       "source": "emilkowalski/skills",
@@ -346,14 +350,14 @@
     },
     "frontend-design": {
       "source": "anthropics/claude-plugins-official",
-      "ref": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
+      "ref": "a7ba5b93db0c7c8d17f3f1d25853adca79598a1a",
       "imported": "2026-10-09",
       "files": {
         "LICENSE.txt": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
         "SKILL.md": "d91970639e9f5c37682ac7ab60094d35f1c7c1f38d731bd56396563aee10c1d3"
       },
       "license": "Apache-2.0",
-      "updated": "2026-10-29"
+      "updated": "2026-10-30"
     },
     "godot-2d-movement": {
       "source": "gamedev-skills/awesome-gamedev-agent-skills",
@@ -646,7 +650,7 @@
     },
     "moli-webfetch": {
       "source": "lexmount/moli",
-      "ref": "9939abc2c628c2714d957303630e10290fcfb5eb",
+      "ref": "898ba89d36193b40efae354690296e44a3a294b8",
       "imported": "2026-10-11",
       "files": {
         "SKILL.md": "2bad2f4f24eb6396c4f0872756c605eb93fbe821aa9f53802b817e9e3a1fbc89",
@@ -654,7 +658,7 @@
         "references/fetch-recipes.md": "1b40d43ea209c7e36cfce9606fd7277910472bfddff44ef206edfd151f63d632"
       },
       "license": "Apache-2.0",
-      "updated": "2026-10-29"
+      "updated": "2026-10-30"
     },
     "neo-brutalism": {
       "source": "madebymustafa/design-taste",
@@ -667,7 +671,7 @@
     },
     "oil-ui": {
       "source": "oil-oil/oil-ui",
-      "ref": "e3334bd5f6e700d21ac275b169ceee6495db9391",
+      "ref": "56240e1f9600088b6e658c9c2b37acbb91bfb95b",
       "imported": "2026-10-26",
       "files": {
         ".github/workflows/tests.yml": "363382aacea03a75919fbcae30dc535c2bfe294610f46ad7f6074ee9c209ea40",
@@ -676,7 +680,7 @@
         "README.en.md": "e6e3de57281654b678a3ff31c589e6508fd9b968dbf6dc7e05c90a656614c129",
         "README.md": "3f82a6edc50951bb2cc64c56344fe1619bf61b47ece776037639856bb4d44f90",
         "README.zh-CN.md": "692722a5f4b8f433ae99e078b264daa5feefeb2316350d79403c2f3374ba77f3",
-        "SKILL.md": "d2fd857c0e27c9dd972c9842acf99a133304a63e34116e8b9f2467a8e7edd2a9",
+        "SKILL.md": "5e540ef8802bfdadfe5ad99bbb174cc51789b28780b41d748833ce70be15a7f1",
         "assets/fonts/instrument-serif/InstrumentSerif-Regular.ttf": "498efd461f6ddfcb7a111bf9a565709d2085d48201d501ead960d93e84ffbb88",
         "assets/fonts/instrument-serif/OFL.txt": "129ed7618959716959f2941fdd5b49e0ad6e6c1d78726761786a00253d865521",
         "assets/logo.png": "35f58a88e195bf4472e2f0fc795122fb9396464cbb3f0d7a2cb639b6c004f972",
@@ -688,42 +692,42 @@
         "assets/readme/showcase.webp": "92058c5846515a9c6073578fc683808208ac9af880993f9223c248198afa7071",
         "assets/style-explorer.html": "910bbc6ed3e4a8bf92bd24883ac87b400f346fe146f2deafd8eee2ce38b4962e",
         "assets/vendor/alpine.min.js": "1d8911c7b8a55bd0ceb79896251ca00d575915e2cd4348e8007a850e59ba0dc0",
-        "references/design-direction.md": "5a0aeafd695e9a0436f06ede24abc70d925e5957130e0cc6d559eaadf2793886",
+        "references/design-direction.md": "034aa3181bd014f48b9a702e4dca0b630794c5519379aeae6c9529da8be967be",
         "references/direction-persuasion.md": "f229766bf763be2628c50ce9045c052d87018ffc91aea4a7964eb8a215cd146c",
         "references/layout-and-viewport.md": "eef96c34ed89b56b381eb131db7619c875f98e896686669b6744558d10eed02d",
-        "references/media.md": "3b04947b83d974b894fc92d8528fcc338cbcc6a1688bb232fcc6b0a3966109f2",
+        "references/media.md": "251c3766e48126a83d534714ed6e845f2d0ad70d1c179d20d47a563e8a63753c",
         "references/motion.md": "d4bb6feb692b86812d459534d1f443c500dbc953ee5273db17108067aab91f76",
-        "references/play.md": "31f070c91c7bc0ecee8c1713d0e4bbf44ed68cf1c27d5835404f270620ef4560",
-        "references/reviewer-manual.md": "1b467c8ad5f8004dc2fafbe3542b48c4ace9bd2bae9ba40e7bfd04ea513e62ec",
-        "references/scroll-narrative.md": "4e91a56335c44da03693e1d4496f5bcbef4e95ff12d4b62fd9d0680d8d12e3a7",
+        "references/play.md": "1785dd9eb73525631dcc516b7be45ba9676eb298742495615f6db67d1dd4baf5",
+        "references/reviewer-manual.md": "8edf9a262f78df4b76f43320a0d0024131eb1f5eac14cdd58664cf64471ec51d",
+        "references/scroll-narrative.md": "568faf68eb4ae2fd5cf7e35d8caa055ccd352c787488caa1e1d41985f9edf8d2",
         "references/style-explorer.md": "3e2dc3c1c0c0e4544a0b12688490bcf42c04a63339857b06e6dbd2e13dc4e65c",
-        "references/task-explore.md": "3c58fb70912d847814d771fde60d07294624003d8dc4a1cc1164b82134ecedae",
+        "references/task-explore.md": "07a853988b844033b55c4fd386de30acd663279c5548ac483f9203e4cce7508d",
         "references/task-review.md": "f7aa2861f851ebeb378cca45ab7a29eb2f46da089a53c656497dd9ee35cfe869",
-        "references/tools.md": "96aa8649c1003f61ebf5c4a2d1bf27f17fd89f254ee28639547532a76f14fbaa",
-        "references/ux-review.md": "880aa05509aa529d907b3a08c8e2c881d398e1c31679b05b2616b1dc154e5103",
+        "references/tools.md": "9c91d6090bedee3278d0e1617abf534c5bb709a2ce3bfc52874cd0c9a0c15cea",
+        "references/ux-review.md": "735604758f3295c6ce72db8def47ead7d936180860fee2b5e4981d00992f75e2",
         "references/ux-reviewer.md": "aafc0753939c06591d5078b066a89d8fe15bc539022b82b9778348a600b119fc",
-        "references/visual-language.md": "609c542a92c705938c7b8cf37fead5b2b95518fb9c52292f938d54741673e34f",
-        "references/visual-review.md": "796c5c434e2e402abbf1096c9c739da3c2df08b036016edb2a04f6300945a7f1",
+        "references/visual-language.md": "3b97c6a3b487065280762149fa8e4f5143e00e23cc46281410cefe192134d710",
+        "references/visual-review.md": "0ec9a54c9f6d228e1d7997dad1aa8957962bb2b0691cbc10060fce24e0453612",
         "references/workdir.md": "8f56ed917e9784565c06e236bb783a8d7d644830daf67f27b2f3eff87ed0ca94",
         "scripts/build_explorer.py": "a48d3cc52a0b273b8cdb84f2d29224c31e22f0e07c0ac0c56119d86f38788dd3",
         "scripts/check_update.py": "49bb8a2d423b3a2f110f9b777df8de55f8d4c629c8ee79485df4372e2b237f3a",
         "scripts/check_update.sh": "eeebaf44eb29d61784690e09e0d8d306a44ca2a3025c48a42928b7ac7174d7d4",
-        "scripts/chrome.mjs": "fd4cba106de65517d32df20f6f6756258c92ee09228f14a8bdfb369d1943840c",
+        "scripts/chrome.mjs": "dcdc40740e541c97dc467f28f3430edc632469545504fdc165f633383ea01de3",
         "scripts/curate-media.mjs": "2bc60a4bd761b7082ac17d0d3e2d4bc1d4630cf763138e9f3bd291d6ceb3bdf4",
         "scripts/oiloil-image.mjs": "9def8ef07485436207db85a97f4a8b2a5b8ccd7b3d381547834cfcb7ed6d0164",
         "scripts/prep-image.mjs": "e886cb55c3e8e99317793fb53bc33aef1bfe4511c2c3aef66de6b48bdf107782",
         "scripts/recommend_once.py": "c1b28d9cec6d47ab637e65fa19b3b183ddddf4a4a950b5bdc6f11aa113bb9672",
-        "scripts/shoot.mjs": "95f8c13a9c111e746bb896e929df075bfe2eebfe67ce76964314842e8f238f5c",
+        "scripts/shoot.mjs": "176b157dee0f23376cf7ae6b684cd9e921e6a11754d78527bb762662455e2efa",
         "tests/test_build_explorer.py": "79bf92ffe465186289ec3de77fa632c6cda15954ad75f72a450be57b2928f6a9",
         "tests/test_check_update.py": "3dac4095924b3bfeaf5311c89d6d423819d0983689f086c2d23d2bfbbc715c86",
         "tests/test_curate_media.py": "20244105f024df559569c56caae0977af50d15c4eeee2fc9571e66000fd1981d",
         "tests/test_oiloil_image.py": "a59a0e0cb66bcff4c81472c18e220cf5c07efea5b94ab78cb1115eda672c7c15",
         "tests/test_prep_image.py": "ac182cfd9869574bca5ca64694578b9344c9b181597e06090e7135a22ec74a20",
-        "tests/test_shoot.py": "4ef6015ed2dfda469df17e231adbe587be359fae6784ed2707f9aa5581a0c239",
+        "tests/test_shoot.py": "b5879d810ccb0348e0ca6b9d8e6a121c6e8adc3d9076dcf7852d48a72715c075",
         "tests/test_workdir.py": "05b252138f0eef0c8c06911ddd910ad4d2b9886c49a442ee62d8543b216f927a"
       },
       "license": "MIT",
-      "updated": "2026-10-29"
+      "updated": "2026-10-30"
     },
     "painted-animation": {
       "source": "tuzhechen2005/opus-video-skills",
@@ -941,7 +945,7 @@
     },
     "rust-best-practices": {
       "source": "apollographql/skills",
-      "ref": "ff4534868e089580c2e09563c20f86a410179628",
+      "ref": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
       "imported": "2026-10-16",
       "files": {
         "SKILL.md": "b1651a95a2c36a8350c033449f52d07eebfdbf08e3bd1d5b22c4b7f55f7aa17c",
@@ -956,11 +960,11 @@
         "references/chapter_09.md": "bdd59af111d402e4385c77e26fa6d53fc113e40ef678a9cf7aaff221e5c21917"
       },
       "license": "MIT",
-      "updated": "2026-10-29"
+      "updated": "2026-10-30"
     },
     "rust-port": {
       "source": "morganlinton/BeautifulRust",
-      "ref": "f92961282b83e11757f076e787b4725b38d07b56",
+      "ref": "40db61c6fee84bd121cf288755f0e2f22a50e995",
       "imported": "2026-10-26",
       "files": {
         "SKILL.md": "f7c8ee4f328ae52086245b4ef628a9ed5d8f306c4dbee7f41551871cac93d073",
@@ -999,7 +1003,7 @@
         "evals/port-python-task-graph/prompt.md": "778390737b81b2da4e1a3af677cfd0ec9d4f3424102304f10eced720057a52b2"
       },
       "license": "MIT",
-      "updated": "2026-10-29"
+      "updated": "2026-10-30"
     },
     "rust-refactoring": {
       "source": "(authored)",
@@ -1013,10 +1017,10 @@
     },
     "rust-review": {
       "source": "morganlinton/BeautifulRust",
-      "ref": "f92961282b83e11757f076e787b4725b38d07b56",
+      "ref": "40db61c6fee84bd121cf288755f0e2f22a50e995",
       "imported": "2026-10-26",
       "files": {
-        "SKILL.md": "f35418faf23ec36b9582fdad56953d146e7b334f26cd4c8743f1f87fb648a55d",
+        "SKILL.md": "3a2ee9874896d2f8f980b617e2b32ce3daff8275ec6ee12c2fb2710e2ae91a9f",
         "evals/review-bevy-arena/case.yaml": "984e3b91c53b9356f295886428c2ccf067e9aca13bc4f9aaabcea2ea6e83222c",
         "evals/review-bevy-arena/files/Cargo.lock": "e600ab9927c3cbf9242c99e5907fb0320fa9f5baa9e3258c456eed0b2ef7a54a",
         "evals/review-bevy-arena/files/Cargo.toml": "3539445fe6404b9d2344a0431790e1a233b9081ef89fb22c4115cf33d69f1cb9",
@@ -1053,11 +1057,11 @@
         "evals/review-inventory-module/prompt.md": "4a7ab79aa08e2e84fce3151e78baef05bd59b9556c13313bd6809f3856544c55"
       },
       "license": "MIT",
-      "updated": "2026-10-29"
+      "updated": "2026-10-30"
     },
     "skill-creator": {
       "source": "anthropics/claude-plugins-official",
-      "ref": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
+      "ref": "a7ba5b93db0c7c8d17f3f1d25853adca79598a1a",
       "imported": "2026-10-09",
       "files": {
         "LICENSE.txt": "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd",
@@ -1080,7 +1084,7 @@
         "scripts/utils.py": "3af8ae62c40c73ab712207436a0d9a981e845f25c5a7040229eb189cc8e45bb1"
       },
       "license": "Apache-2.0",
-      "updated": "2026-10-29"
+      "updated": "2026-10-30"
     },
     "taste-accessibility": {
       "source": "madebymustafa/design-taste",

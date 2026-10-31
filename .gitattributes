@@ -21,6 +21,12 @@ scripts/** text eol=lf
 *.ttf -text
 *.otf -text
 
+# Windows batch launchers ship CRLF upstream (impeccable, 2026-10-31): converting
+# them to LF would both break cmd.exe label parsing and drift the byte-strict
+# fingerprints on every fresh clone (same mechanism as lesson 2026-10-18)
+*.cmd -text
+*.bat -text
+
 # Templates are canon material: byte-stable across checkouts (lesson 2026-10-18)
 template/** text eol=lf
 skills.json text eol=lf

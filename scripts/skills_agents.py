@@ -4,7 +4,7 @@
 Where sync_agents.py manages the common AGENTS.md BLOCK, this script manages
 common SKILLS (folders holding a SKILL.md, e.g. github.com/obra/superpowers):
 
-  skills add <github-url> [--skill NAME] [--ref REF] [--force]
+  skills add <github-url> [--skill NAME] [--ref REF] [--folder PATH] [--force]
                           Import a skill folder from a GitHub repository into the
                           kit (skills/<NAME>/) and record it in skills.json
                           (source, resolved commit sha, per-file sha256).
@@ -239,7 +239,8 @@ def slug_of(url: str) -> str:
     return f"{m.group(1)}/{m.group(2)}"
 
 
-def extract_skill(data: bytes, name: str | None) -> tuple[str, dict[str, bytes]]:
+def extract_skill(data: bytes, name: str | None,
+                  folder_hint: str | None = None) -> tuple[str, dict[str, bytes]]:
     """Pick the skill folder in a repository tarball: (name, {relative path: content})."""
     files: dict[str, bytes] = {}
     try:
@@ -249,15 +250,25 @@ def extract_skill(data: bytes, name: str | None) -> tuple[str, dict[str, bytes]]
                 parts = m.name.split("/")
                 if m.isfile() and len(parts) >= 2 and parts[-1] == SKILL_MARKER:
                     candidates["/".join(parts[1:-1])] = m.name  # "" = skill at the repository root
+            hint = folder_hint.strip("/") if folder_hint else None
+            if name is None and hint:
+                name = hint.split("/")[-1]
             if name is None:
                 if len(candidates) == 1 and "" not in candidates:
                     name = next(iter(candidates)).split("/")[-1]
                 else:
                     known = ", ".join(sorted(f or "(repository root)" for f in candidates)) or "none found"
                     raise InputError(f"NO SKILL SELECTED: pass --skill NAME (candidates: {known})")
-            folder = next((f for f in candidates if f and f.split("/")[-1] == name), None)
-            if folder is None and "" in candidates and len(candidates) == 1:
-                folder = ""  # root skill: the installed name comes from --skill
+            if hint is not None:
+                if hint not in candidates:
+                    known = ", ".join(sorted(candidates)) or "none found"
+                    raise InputError(f"FOLDER NOT FOUND: {hint} holds no {SKILL_MARKER}"
+                                     f" (candidates: {known})")
+                folder = hint
+            else:
+                folder = next((f for f in candidates if f and f.split("/")[-1] == name), None)
+                if folder is None and "" in candidates and len(candidates) == 1:
+                    folder = ""  # root skill: the installed name comes from --skill
             if folder is None:
                 known = ", ".join(sorted(candidates)) or "none found"
                 raise InputError(f"SKILL NOT FOUND: no {SKILL_MARKER} under a folder named {name}"
@@ -396,11 +407,12 @@ def apply_plan(skills_dir: Path, plan: SkillPlan, entry: dict) -> None:
 
 # ------------------------------------------------------------------ commands
 
-def cmd_add(url: str, name: str | None, ref: str | None, force: bool) -> int:
+def cmd_add(url: str, name: str | None, ref: str | None, force: bool,
+            folder: str | None = None) -> int:
     slug = slug_of(url)
     sha = resolve_ref(slug, ref)
     data = fetch_tarball(slug, sha)
-    name, files = extract_skill(data, name)
+    name, files = extract_skill(data, name, folder)
     entry_files = {rel: hash_bytes(content) for rel, content in sorted(files.items())}
     registry = load_registry()
     existing = registry.get(name)
@@ -424,6 +436,8 @@ def cmd_add(url: str, name: str | None, ref: str | None, force: bool) -> int:
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(content)
     entry = {"source": slug, "ref": sha, "imported": local_today().isoformat(), "files": entry_files}
+    if folder:
+        entry["folder"] = folder.strip("/")  # re-imported from the same folder on update
     license_id = detect_license(data)
     if license_id:
         entry["license"] = license_id
@@ -594,7 +608,7 @@ def cmd_update(only: str | None, ref: str | None, force: bool, dry_run: bool) ->
                 counts["refused"] += 1
                 continue
             data = fetch_tarball(entry["source"], sha)
-            _, files = extract_skill(data, name)
+            _, files = extract_skill(data, name, entry.get("folder"))
             new_files = {rel: hash_bytes(content) for rel, content in sorted(files.items())}
             changed = sorted(k for k, v in new_files.items() if entry["files"].get(k) != v)
             removed = sorted(k for k in entry["files"] if k not in new_files)
@@ -714,6 +728,8 @@ def main(argv: list[str] | None = None) -> int:
     a = sub.add_parser("add", help="vendor a skill from a GitHub repository")
     a.add_argument("url", help="https://github.com/<owner>/<repo>")
     a.add_argument("--skill", help="skill folder name in the repository (default: the only one)")
+    a.add_argument("--folder", help="repository folder holding the skill, when several "
+                                    "same-named folders exist (e.g. .agent/ and .agents/ mirrors)")
     a.add_argument("--ref", help="branch, tag or commit (default: default branch HEAD)")
     a.add_argument("--force", action="store_true", help="replace an already vendored skill")
 
@@ -757,7 +773,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     try:
         if args.cmd == "add":
-            return cmd_add(args.url, args.skill, args.ref, args.force)
+            return cmd_add(args.url, args.skill, args.ref, args.force, args.folder)
         if args.cmd == "author":
             return cmd_author(args.name, args.license, args.force)
         if args.cmd == "list":

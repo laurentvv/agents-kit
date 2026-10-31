@@ -216,6 +216,79 @@ class Add(Kit):
         self.assertIn("UNKNOWN SKILL", out)
 
 
+def mirror_tarball(dot_agent_body: bytes, dot_agents_body: bytes) -> bytes:
+    """In-memory GitHub tarball holding the SAME skill in two layout mirrors
+    (.agent/ and .agents/, like pbakaus/impeccable): tar order picks .agent first."""
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w:gz") as tar:
+        def add(rel: str, data: bytes) -> None:
+            info = tarfile.TarInfo(f"acme-main/{rel}")
+            info.size = len(data)
+            tar.addfile(info, io.BytesIO(data))
+
+        add(".agent/skills/mirror/SKILL.md", dot_agent_body)
+        add(".agents/skills/mirror/SKILL.md", dot_agents_body)
+        add(".agents/skills/mirror/agents/helper.toml", b"name = 'helper'\n")
+        add("LICENSE", b"Apache License\n\nSPDX-License-Identifier: Apache-2.0\n")
+    return buf.getvalue()
+
+
+class FolderSelection(Kit):
+    """--folder selects the mirror when a repository ships same-named skill folders."""
+
+    DOT_AGENT = b"# light mirror\n"
+    DOT_AGENTS = b"# full mirror\n"
+
+    def tarball(self, dot_agent: bytes | None = None, dot_agents: bytes | None = None) -> bytes:
+        return mirror_tarball(dot_agent or self.DOT_AGENT, dot_agents or self.DOT_AGENTS)
+
+    def test_folder_picks_the_named_mirror_and_is_recorded(self):
+        self.github(tarball=self.tarball())
+        code, out = run("add", "https://github.com/acme/mirrors", "--skill", "mirror",
+                        "--folder", ".agents/skills/mirror")
+        self.assertEqual(code, 0, out)
+        kit_copy = sa.SKILLS_DIR / "mirror"
+        self.assertEqual((kit_copy / "SKILL.md").read_bytes(), self.DOT_AGENTS)
+        self.assertTrue((kit_copy / "agents" / "helper.toml").is_file())
+        entry = json.loads(self.registry.read_text(encoding="utf-8"))["skills"]["mirror"]
+        self.assertEqual(entry["folder"], ".agents/skills/mirror")
+        self.assertEqual(entry["license"], "Apache-2.0")
+
+    def test_without_folder_keeps_the_first_candidate(self):
+        self.github(tarball=self.tarball())
+        code, out = run("add", "https://github.com/acme/mirrors", "--skill", "mirror")
+        self.assertEqual(code, 0, out)
+        self.assertEqual((sa.SKILLS_DIR / "mirror" / "SKILL.md").read_bytes(), self.DOT_AGENT)
+        self.assertNotIn("folder", json.loads(self.registry.read_text(encoding="utf-8"))["skills"]["mirror"])
+
+    def test_folder_infers_the_skill_name(self):
+        self.github(tarball=self.tarball())
+        code, out = run("add", "https://github.com/acme/mirrors",
+                        "--folder", ".agents/skills/mirror")
+        self.assertEqual(code, 0, out)
+        self.assertEqual((sa.SKILLS_DIR / "mirror" / "SKILL.md").read_bytes(), self.DOT_AGENTS)
+
+    def test_unknown_folder_refused_with_candidates(self):
+        self.github(tarball=self.tarball())
+        code, out = run("add", "https://github.com/acme/mirrors", "--skill", "mirror",
+                        "--folder", "skills/mirror")
+        self.assertEqual(code, 2)
+        self.assertIn("FOLDER NOT FOUND", out)
+        self.assertIn(".agents/skills/mirror", out)
+
+    def test_update_reimports_from_the_recorded_folder(self):
+        self.github(tarball=self.tarball())
+        self.assertEqual(run("add", "https://github.com/acme/mirrors", "--skill", "mirror",
+                             "--folder", ".agents/skills/mirror")[0], 0)
+        self.github(SHA2, tarball=self.tarball(b"# light moved\n", b"# full moved\n"))
+        code, out = run("update", "--skill", "mirror")
+        self.assertEqual(code, 0, out)
+        self.assertIn("update       mirror", out)
+        # the .agent mirror body must NOT win on re-import
+        self.assertEqual((sa.SKILLS_DIR / "mirror" / "SKILL.md").read_bytes(), b"# full moved\n")
+        self.assertEqual(json.loads(self.registry.read_text(encoding="utf-8"))["skills"]["mirror"]["ref"], SHA2)
+
+
 class List(Kit):
     def test_list(self):
         code, out = run("list")

@@ -2,6 +2,14 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Tooling — 2026-10-31: impeccable skill vendored (+ `--folder` selection flag)
+
+- New vendored skill: **`impeccable`** (pbakaus/impeccable, Apache-2.0, pinned `b7a8917`, skill `0.1.18`) — the design toolkit for coding agents: 24 commands (`critique`/`audit`/`polish`/`bolder`/`quieter`/`animate`/`live`…), a craft floor of absolute bans, four visitor modes, PRODUCT.md/DESIGN.md capture, 4 sub-agent definitions, and a **62-rule deterministic slop detector** (no LLM, no API key; `npx impeccable detect --github` for CI stays an external npm dependency, llm-evals discipline). Vendored from the `.agents/skills/impeccable/` mirror: 63 files, 2.3 MB (font-index.json 1.1 MB, live-browser.js 550 KB); upstream NOTICE kept at `docs/upstream-notices/impeccable-NOTICE.md`.
+- **New `skills add --folder PATH` flag**: the repository ships the same skill in two layout mirrors (`.agent/` light without sub-agents, `.agents/` full with hardcoded `.agents/…` prose paths); tar order silently picked the light one, whose paths are wrong for the fleet's `.agents/skills/` installs. The flag is validated against the tarball's candidate folders, recorded in `skills.json` (`folder` key) and honored by `update` on every re-import — 5 regression tests (`FolderSelection`). Backward compatible: pins without `folder` keep the first-candidate behavior.
+- Supply-chain review (§5/§6) before vendoring: both launchers read in full — engine download only from the project's GitHub releases, **fail-closed** against the vendored `engine-checksums.txt` (no sha256 → no download), never pipes network content into a shell; no `child_process`/`eval`/exfiltration patterns across the 63 files; the Rust engine itself is NOT vendored and NOT fetched at vendor/deploy time (first-run download, `IMPECCABLE_BIN`/PATH preinstall for egress-free CI).
+- Line endings: `impeccable.cmd` ships CRLF — `*.cmd`/`*.bat` now `-text` in `.gitattributes` (byte-exact; LF would break cmd.exe `goto` labels and drift fingerprints on fresh clones). **Fleet deploy note**: consuming repositories need the same `*.cmd -text` line in their own `.gitattributes` (checklist in the audit doc).
+- Audit, routing guidance (impeccable owns the design workflow; the taste cluster stays the aesthetics references) and deploy checklist: `docs/impeccable-skills-2026-10-31.md`.
+
 ## Tooling — 2026-10-30: on-demand skills refresh (6 content updates, 5 re-pins)
 
 - User-triggered cycle (the anonymous-API dry-run died on 403 after ~60 calls — 8 false failures, among them 5 skills actually unchanged; recovery identical to the 2026-10-22/10-29 notes: upstream HEADs resolved via authenticated `gh api` outside the REST quota, then `update --skill <name> --ref <sha>` per skill). **11 skills moved, 0 refused.**

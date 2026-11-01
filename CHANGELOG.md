@@ -2,6 +2,12 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Tooling — 2026-11-01: godot-skill-quality pack vendored (4 Godot visual-quality skills)
+
+- New vendored pack: **4 skills from `laurentvv/godot-skill-quality`** (MIT, pinned `1771e83e3d5a`, 35 files / ~190 KB): `godot-lighting-environment` (sun → sky ambient → AgX → SSAO/SSIL → SDFGI → fog, applied in order), `godot-lights-camera-post` (cull-masked fill light, local warm lights, FOV/DoF, MSAA/TAA + vignette/grain/dust `.gdshader`), `godot-render-performance` (leave-one-out GPU measurement, then trim the expensive feature's sub-settings) and `godot-vegetation-shaders` (leaf-card canopy normals, vertex-colour wind sway, blended ground, MultiMesh grass; 3 `.gdshader` + Blender asset-prep scripts). Every technique measured in Godot 4.7 — matches the knowledge-router corpus. Complementary to the 16 gamedev-pack `godot-*` skills (which cover scripting/physics/UI, not visual quality); no name collision.
+- Fleet-owner-authored upstream: the local authoring copy was verified byte-identical to the GitHub head (same sha) before review; review (§5/§6) in `docs/godot-skill-quality-2026-11-01.md` — grep sweeps clean (no secrets/machine paths; the only URLs are asset credits), scripts scanned for network/exec patterns (zero hits).
+- **Deployment was scoped, not fleet-wide** (explicit user request): the 4 skills went only to the repositories that do Godot development — `tetris-3d` (fleet, already carries the 16 gamedev godot skills) and `L'HERITIER DU VIDE` (Godot 4 project, fleet-managed block v3.1 but located outside the standard audit roots, so deploy scans never reach it). A fleet-wide `skills deploy` at the next refresh is safe: the pack is ordinary vendored content.
+
 ## Tooling — 2026-11-01: on-demand skills refresh (2 content updates, 1 re-pin)
 
 - User-triggered cycle (daily news check; the anonymous-API dry-run died on 403 for 21 sources — recovery identical to the 2026-10-29/10-30 notes: upstream HEADs resolved via authenticated `gh api`, then `update --skill <name> --ref <sha>` per skill). **3 skills moved, 0 refused.**

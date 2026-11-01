@@ -446,6 +446,38 @@
       "license": "Apache-2.0",
       "updated": "2026-10-29"
     },
+    "godot-lighting-environment": {
+      "source": "laurentvv/godot-skill-quality",
+      "ref": "1771e83e3d5a63b4f7ee7320ec8de891d1a36b9b",
+      "imported": "2026-11-01",
+      "files": {
+        "LICENSE": "2679f099f2170cedc164532793f86a8f201d2db5ae2a92a0287464b765547310",
+        "PROVENANCE.md": "1887722d1b7ca241f642bde63740d04497511b6656307d96dfd59785fcf09e80",
+        "SKILL.md": "ab0e47241418a4b07aa44e70ec87633bb192230cba437c1099799ad6ebd35a37",
+        "evals/evals.json": "3b6d6340c2661ccc0afa3b01d5bad3bc92bb6ff2b4111535c4c62bff7389d223",
+        "evals/files/flat_village/main.tscn": "248e59808e7b3c4071919d41170679c7728ac5d726c9007bf9db486424994f67",
+        "evals/files/flat_village/project.godot": "3830b24c9d2726566ecd57a2430373b8f8fe111643b483ab234efdb767716bbe",
+        "references/evidence.md": "8427cca2d9c42d1d4c778516384cb923bae1fb18ac6c7b54036bb2fdd2b0ee30",
+        "references/settings.md": "d01d2e0fc4ab6e5a0a07c37d65ac7112b977318897dedf87959483fa7a7398ed",
+        "scripts/lighting_preset.gd": "5bbb2715400073fa0052ebeeb1a36f8d07a92cc6478d3c2239ede9e7b2a12a7b"
+      },
+      "license": "MIT"
+    },
+    "godot-lights-camera-post": {
+      "source": "laurentvv/godot-skill-quality",
+      "ref": "1771e83e3d5a63b4f7ee7320ec8de891d1a36b9b",
+      "imported": "2026-11-01",
+      "files": {
+        "LICENSE": "2679f099f2170cedc164532793f86a8f201d2db5ae2a92a0287464b765547310",
+        "PROVENANCE.md": "1366aa4b745c138c01bc89e1a932f0bd024c3849ec4a9589de0d3a85ee64a05e",
+        "SKILL.md": "cd7b7b6c06dae0f1a92b2ccc6242bf4708c1a344a2922bc8252f3c9fe1372070",
+        "assets/vignette_grain.gdshader": "a408f893d9017788b92934254cdfd7098887f4f484f087e34172b2b0703fcc38",
+        "evals/evals.json": "4b36738792758a203cdbb827432a370da20479d79acad5a33683c1ac36449888",
+        "references/evidence.md": "ebfe2904789198499615e7ecd00b58d6c0ba36b294b5050a15bd77e9cc4962ea",
+        "scripts/lights_camera_post.gd": "39e394f4f2b26d052135d221cbfedf781b2e0e4a50154214e6092814661aa5a6"
+      },
+      "license": "MIT"
+    },
     "godot-multiplayer": {
       "source": "gamedev-skills/awesome-gamedev-agent-skills",
       "ref": "19d93f97c9c1ea0f8b306e77aa81e0d3e352d3e9",
@@ -479,6 +511,21 @@
       },
       "license": "Apache-2.0",
       "updated": "2026-10-29"
+    },
+    "godot-render-performance": {
+      "source": "laurentvv/godot-skill-quality",
+      "ref": "1771e83e3d5a63b4f7ee7320ec8de891d1a36b9b",
+      "imported": "2026-11-01",
+      "files": {
+        "LICENSE": "2679f099f2170cedc164532793f86a8f201d2db5ae2a92a0287464b765547310",
+        "PROVENANCE.md": "442fb3ec5475cd025a3192e4e7ceb8311a23682bc962c86b6d46c22944cc11d6",
+        "SKILL.md": "60b02c32455dd8b3a0a8563b6c616ed065dcb3215e2af5b9e0678f2bf6d9fb7f",
+        "evals/evals.json": "b174c9e99a655fb79bf04b9c81924195995a0fd406163066f0d0a85cb8daaddb",
+        "references/evidence.md": "6081b35b92085e6e451ad8de5ef9da8b2113c25b31bbf2896b6e49967c711e18",
+        "scripts/bench_switches.gd": "a472d64e9022f39fcda5542d39cd2389ba806d1a17be576230c4c933ff233715",
+        "scripts/shadow_budget.gd": "f482effe06a9dbc23e7bd5aa150349f409bf7d85804f2afbb00418a35967d06a"
+      },
+      "license": "MIT"
     },
     "godot-resources": {
       "source": "gamedev-skills/awesome-gamedev-agent-skills",
@@ -534,6 +581,26 @@
       },
       "license": "Apache-2.0",
       "updated": "2026-10-29"
+    },
+    "godot-vegetation-shaders": {
+      "source": "laurentvv/godot-skill-quality",
+      "ref": "1771e83e3d5a63b4f7ee7320ec8de891d1a36b9b",
+      "imported": "2026-11-01",
+      "files": {
+        "LICENSE": "2679f099f2170cedc164532793f86a8f201d2db5ae2a92a0287464b765547310",
+        "PROVENANCE.md": "384bcbe1a00b08a968edf4e8f18b383ce2c5188ea18b6784e901fed2b528b327",
+        "SKILL.md": "192f20529b412cc44d9726802e1db5163dd90da3cd5f99c26cf2459f9db054cd",
+        "assets/grass_wind.gdshader": "4c05926341f1cf8204bc73a9727aafd0ff9eba530c978d75b0bb64ec041eb9d2",
+        "assets/ground_blend.gdshader": "b14c1fd7bf9080d97085d6a6b9aeb13d40fe6a6110bb14b534be8bdd1aad3ca7",
+        "assets/leaf_canopy.gdshader": "9795ca261a14ce79651880bd1d69ff2b170265fe0129042be41b0ad961f35f31",
+        "evals/evals.json": "54661cc02a8983ca3eaf35d1c1da9501feaeb798cfbcff4bebe343df0b22e618",
+        "references/evidence.md": "f9beecd363bcf27aeb76e1e2b129d708f4cd5f5b63b5d4c6b0e6f3757af96167",
+        "scripts/blender_grass_vertex_colors.py": "2c89aea6558f13ac0eeca954f46621e298bad2d73ac3be6e1200e7fc5c9bffe6",
+        "scripts/blender_leaf_card_normals.py": "485ddda711a0fc2f476dae3a67c984cdea7b0165508d09014032f3781b6c9090",
+        "scripts/ground_mask.gd": "65e9ac1aad3a49c495f863b170f3fb2ab646db59f9c5d83a939706469694bbd9",
+        "scripts/scatter_multimesh.gd": "ed932931c9290df3d6ed262ec8fd285f0f7b509e02a8c72f3087f513eaf6644d"
+      },
+      "license": "MIT"
     },
     "good-css": {
       "source": "vojtaholik/good-css",

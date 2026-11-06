@@ -2,6 +2,11 @@
 
 Versions of the **common block** (`agents-common.md`, fingerprints in `agents-common.versions.json`) and of the kit's **tooling**. Read the block entry before running `sync` on the fleet.
 
+## Common block v3.3 — 2026-11-06
+
+- §4 gains a **No CI on GitHub's infrastructure** rule: agents never create, edit or enable GitHub Actions workflows (`.github/workflows/`) — builds and validation run locally on the user's machine; modifying an existing workflow requires a formal explicit request. Existing workflows (the kit's own CI included) are untouched: the rule binds agent behavior, not the repositories' pipelines.
+- **What changes for the fleet**: nothing breaks — repositories simply report "behind (v3.2, canon v3.3)" until resynced (`sync_agents.py sync`). User-maintained CI keeps running as is; agents stop proposing Actions-based validation when a task needs compiling or testing.
+
 ## Tooling — 2026-11-05: android-skills pack vendored (all 36 skills of android/skills)
 
 - New vendored pack: **the complete set of 36 skills from `android/skills`** — Google's official agent skills for Android development (Apache-2.0, pinned `bf68e2d66a99`, main pushed 2026-11-04; 439 files / ~4.5 MB). Coverage: Jetpack Compose (`adaptive`, `ink-app-builder`, `ink-custom-brush-builder`, `jetpack-compose-performance`, `migrate-xml-views-to-jetpack-compose`), device AI (`appfunctions`, `litert-lm`, `litert-runtime`, `ml-kit-genai-prompt-api`, `mlkit-agent-api`), navigation 3 + navigation-event, media3-cast, security (intent + permissions), Play (engage-sdk, billing upgrade, policy-insights), wear/tv/xr/cars, system (edge-to-edge, glance ×2), performance (anr audit, r8 analyzer), profilers, camerax, identity, testing-setup, agp-9-upgrade, android-cli. Upstream nests skills under 18 category folders; the kit installs them **flat** (name = last path segment, unique upstream and against the 88 skills already vendored) and every `skills.json` entry records the `folder` key for deterministic `update` re-imports.
